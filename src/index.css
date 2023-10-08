@@ -1,0 +1,62 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+body {
+    @apply bg-slate-100;
+}
+.child.active {
+    @apply font-semibold text-orange-500;
+}
+.parent.active {
+    @apply bg-orange-500 font-semibold text-neutral-50;
+}
+.after-image {
+    @apply backdrop-blur-md
+   after:absolute 
+   after:flex 
+   after:items-center 
+   after:justify-center
+   after:bg-slate-200/40
+   after:font-semibold
+   after:text-slate-600
+
+   hover:after:h-full 
+   hover:after:w-full 
+   hover:after:content-['Change'];
+}
+
+.card.swiper-slide {
+    text-align: center;
+    font-size: 18px;
+    background: #fff;
+    height: calc((100% - 30px) / 2) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+/* navigation */
+
+.brand-wrap .swiper .swiper-button-prev::after,
+.brand-wrap .swiper .swiper-button-next::after {
+    font-size: 24px;
+}
+.brand-wrap .swiper .swiper-button-prev {
+    left: 0;
+}
+.brand-wrap .swiper .swiper-button-next {
+    right: 0;
+}
+.brand-wrap .swiper .swiper-wrapper {
+    justify-content: center;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}

@@ -1,0 +1,8 @@
+export { default as Header } from "./Header"
+export { default as BannerSlider } from "./BannerSlider"
+export { default as BrandSlider } from "./BrandSlider"
+export { default as Sidebar } from "./Sidebar"
+export { default as ListProduct } from "./ListProduct"
+export { default as Footer } from "./Footer"
+export { default as ProductSlider } from "./ProductSlider"
+export { default as SameProductSlider } from "./SameProductSlider"

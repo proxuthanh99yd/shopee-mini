@@ -1,0 +1,7 @@
+export { default as AdminLayout } from "./AdminLayout"
+export { default as Dashboard } from "./Dashboard"
+export { default as Categories } from "./Categories"
+export { default as Products } from "./Products/Products"
+export { default as CreateProduct } from "./Products/CreateProduct"
+export { default as EditProduct } from "./Products/EditProduct"
+export { default as Brands } from "./Brands"
