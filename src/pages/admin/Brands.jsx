@@ -4,12 +4,26 @@ import {
     IoTrashBinOutline,
 } from "react-icons/io5";
 import Breadcrumb from "../../components/Breadcrumb";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { ModalBox, Paginate, SelectImage } from "../../components/admin";
 import { useDispatch, useSelector } from "react-redux";
 
 import { dateFormat } from "../../utils/helper";
-import { createBrands, fetchBrands } from "../../features/brands/brandsSlice";
+import {
+    clearFormInput,
+    removeImage,
+    setFormInput,
+    setIsCreate,
+    setIsDelete,
+    setIsUpdate,
+} from "../../features/brands/brandsSlice";
+import {
+    updateBrands,
+    fetchBrands,
+    deleteBrands,
+    createBrands,
+} from "../../features/brands/brandsThunkApi";
+import { toast } from "react-toastify";
 const currentLink = {
     name: "brands",
     path: "/admin/brands",
@@ -23,49 +37,122 @@ const prevLinks = [
 ];
 
 export default function Brands() {
-    const { results, isLoading, isError, status } = useSelector(
-        (state) => state.brands,
-    );
-    const [modalCreate, setModalCreate] = useState(false);
-    const [modalDelete, setModalDelete] = useState(true);
-    const [input, setInput] = useState({
-        name: "",
-        image: [],
-        imagePreview: [],
-    });
-
+    const {
+        results,
+        isLoading,
+        isError,
+        status,
+        formInput,
+        isCreate,
+        isUpdate,
+        isDelete,
+    } = useSelector((state) => state.brands);
     const dispatch = useDispatch();
+    const imageRef = useRef();
+    const toastId = useRef(null);
     useEffect(() => {
+        if (status === "creating") {
+            toastId.current = toast.loading("Creating");
+        }
         if (status === "created") {
+            toast.update(toastId.current, {
+                render: "Create success!",
+                type: "success",
+                isLoading: false,
+                autoClose: 2000,
+            });
             handleClear();
-            setModalCreate(false);
+        }
+        if (status === "deleting") {
+            toastId.current = toast.loading("Deleting");
+        }
+        if (status === "deleted") {
+            toast.update(toastId.current, {
+                render: "Delete success!",
+                type: "success",
+                isLoading: false,
+                autoClose: 2000,
+            });
+            handleClear();
+        }
+        if (status === "failed") {
+            toast.update(toastId.current, {
+                render: "Delete Failed!",
+                type: "error",
+                isLoading: false,
+                autoClose: 2000,
+            });
+        }
+        if (status === "updating") {
+            toastId.current = toast.loading("Updating");
+        }
+        if (status === "updated") {
+            toast.update(toastId.current, {
+                render: "Update success!",
+                type: "success",
+                isLoading: false,
+                autoClose: 2000,
+            });
+            handleClear();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [status]);
 
-    useEffect(() => {}, []);
+    useEffect(() => {
+        dispatch(fetchBrands());
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-    const handleCreate = () => {
-        console.log(input);
-        if (input?.name && input.image) {
-            const formData = new FormData();
-            formData.append("name", input.name);
-            formData.append("image", input.image);
-            dispatch(createBrands({ body: formData }));
+    const handleSubmit = () => {
+        if (isCreate) {
+            if (formInput.name && imageRef.current) {
+                const formData = new FormData();
+                formData.append("name", formInput.name);
+                formData.append("image", imageRef.current);
+                dispatch(createBrands({ body: formData }));
+            }
         }
+        if (isUpdate) {
+            if (formInput.name || imageRef.current) {
+                const formData = new FormData();
+                if (formInput.name) {
+                    formData.append("name", formInput.name);
+                }
+                if (imageRef.current) {
+                    formData.append("image", imageRef.current);
+                }
+                dispatch(
+                    updateBrands({
+                        id: formInput.id,
+                        body: formData,
+                    }),
+                );
+            }
+        }
+        if (isDelete) {
+            dispatch(deleteBrands({ id: formInput.id }));
+        }
+        console.log("isCreate", isCreate);
+        console.log("isUpdate", isUpdate);
+        console.log("isDelete", isDelete);
+        console.log(formInput);
     };
-    const handleDelete = (value) => {
-        // dispatch(deletebrands({ id }));
+    const handleCreate = () => {
+        dispatch(setIsCreate());
     };
     const handleUpdate = (value) => {
-        // dispatch(updatebrands(value));
+        dispatch(setIsUpdate(value));
+    };
+    const handleDelete = (value) => {
+        dispatch(setIsDelete(value));
     };
     const handleClear = () => {
-        setInput({
-            name: "",
-            image: [],
-            imagePreview: [],
-        });
+        dispatch(clearFormInput());
+        imageRef.current = "";
+    };
+    const handleRemoveImage = () => {
+        dispatch(removeImage());
+        imageRef.current = "";
     };
     if (isLoading) {
         return <p>Loading ...</p>;
@@ -80,7 +167,7 @@ export default function Brands() {
                     <h2 className="flex items-center gap-2 text-xl">
                         Brands{" "}
                         <button
-                            onClick={() => setModalCreate(true)}
+                            onClick={handleCreate}
                             className="block rounded-sm bg-green-500 text-2xl text-green-50 transition-colors hover:bg-green-700"
                         >
                             <IoAddSharp />
@@ -93,7 +180,7 @@ export default function Brands() {
                 </div>
                 <div className="mt-4">
                     <div>
-                        <div className="hidden rounded-t bg-orange-400 p-1 font-semibold md:flex">
+                        <div className="hidden rounded-t bg-orange-400 p-1 font-semibold text-neutral-50 md:flex">
                             <div className="mx-1 basis-1/12">No.</div>
                             <div className="mx-1 basis-1/12">ID</div>
                             <div className="mx-1 flex-1">Name</div>
@@ -146,7 +233,10 @@ export default function Brands() {
                                         <span className="font-semibold md:hidden">
                                             Action :{" "}
                                         </span>
-                                        <button className="mr-1 inline-flex items-center gap-1 rounded bg-orange-400 px-3 py-1 text-xs text-orange-50 transition-colors hover:bg-orange-500 ">
+                                        <button
+                                            onClick={() => handleUpdate(brand)}
+                                            className="mr-1 inline-flex items-center gap-1 rounded bg-orange-400 px-3 py-1 text-xs text-orange-50 transition-colors hover:bg-orange-500 "
+                                        >
                                             Edit{" "}
                                             <IoCreateOutline className="text-sm" />
                                         </button>
@@ -167,91 +257,128 @@ export default function Brands() {
                 </div>
                 <Paginate total={1} />
             </div>
-            <ModalBox open={modalCreate} setOpen={setModalCreate}>
+            <ModalBox open={isCreate} closeModal={handleClear}>
                 <div className="flex gap-4">
                     <SelectImage
                         name="image"
-                        imagePreviews={input?.imagePreview}
+                        imagePreviews={formInput.imagePreview}
                         setImagePreviews={(image) =>
-                            setInput((input) => ({
-                                ...input,
-                                imagePreview: [image],
-                            }))
+                            dispatch(
+                                setFormInput({
+                                    value: image,
+                                    name: "imagePreview",
+                                }),
+                            )
                         }
-                        setImageSelected={(image) =>
-                            setInput((input) => ({
-                                ...input,
-                                image: image,
-                            }))
-                        }
-                        removeImage={() =>
-                            setInput((input) => ({
-                                ...input,
-                                image: "",
-                                imagePreview: [],
-                            }))
-                        }
+                        setImageSelected={(image) => {
+                            imageRef.current = image;
+                        }}
+                        removeImage={handleRemoveImage}
                         className="h-24 w-24 text-xs"
                     />
                     <input
-                        value={input.name}
+                        value={formInput.name}
                         onChange={(e) =>
-                            setInput((input) => ({
-                                ...input,
-                                name: e.target.value,
-                            }))
+                            dispatch(
+                                setFormInput({
+                                    value: e.target.value,
+                                    name: "name",
+                                }),
+                            )
                         }
                         className="w-full self-center px-2 py-1"
                         type="text"
                         placeholder="Brand Name"
                     />
                 </div>
-                <div className="mt-4 flex justify-between">
+                <div className="mt-4 flex justify-around">
                     <button
                         onClick={handleClear}
                         className="rounded-sm bg-orange-400 px-3 py-1 text-neutral-50"
                     >
-                        Clear
+                        Cancel
                     </button>
                     <button
-                        onClick={handleCreate}
+                        onClick={handleSubmit}
                         className="rounded-sm bg-green-500 px-3 py-1 text-neutral-50"
                     >
-                        Submit
+                        Create
                     </button>
                 </div>
             </ModalBox>
-            <ModalBox open={modalDelete} setOpen={setModalDelete}>
+            <ModalBox open={isDelete} closeModal={handleClear}>
                 <div className="flex gap-4">
                     <img
-                        src={input.imagePreview}
+                        className="h-24 w-24 object-contain"
+                        src={formInput.imagePreview}
+                        alt=""
+                    />
+                    <div className="self-center p-4">
+                        Are you sure delete brand ?{" "}
+                        <span className="text-red-500">{formInput.name}</span>
+                    </div>
+                </div>
+                <div className="mt-4 flex justify-around">
+                    <button
+                        onClick={handleClear}
+                        className="rounded-sm bg-orange-400 px-3 py-1 text-neutral-50"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleSubmit}
+                        className="rounded-sm bg-green-500 px-3 py-1 text-neutral-50"
+                    >
+                        Delete
+                    </button>
+                </div>
+            </ModalBox>
+            <ModalBox open={isUpdate} closeModal={handleClear}>
+                <div className="flex gap-4">
+                    <SelectImage
+                        name="image"
+                        imagePreviews={formInput.imagePreview}
+                        setImagePreviews={(image) =>
+                            dispatch(
+                                setFormInput({
+                                    value: image,
+                                    name: "imagePreview",
+                                }),
+                            )
+                        }
+                        setImageSelected={(image) => {
+                            imageRef.current = image;
+                        }}
+                        removeImage={handleRemoveImage}
                         className="h-24 w-24 text-xs"
                     />
                     <input
-                        value={input.name}
+                        value={formInput.name}
                         onChange={(e) =>
-                            setInput((input) => ({
-                                ...input,
-                                name: e.target.value,
-                            }))
+                            dispatch(
+                                setFormInput({
+                                    value: e.target.value,
+                                    name: "name",
+                                }),
+                            )
                         }
                         className="w-full self-center px-2 py-1"
                         type="text"
                         placeholder="Brand Name"
                     />
                 </div>
-                <div className="mt-4 flex justify-between">
+                <div className="mt-4 flex justify-around">
                     <button
                         onClick={handleClear}
-                        className="rounded-sm bg-blue-400 px-3 py-1 text-neutral-50"
+                        className="rounded-sm bg-orange-400 px-3 py-1 text-neutral-50"
                     >
                         Cancel
                     </button>
                     <button
-                        onClick={handleCreate}
-                        className="rounded-sm bg-red-500 px-3 py-1 text-neutral-50"
+                        onClick={handleSubmit}
+                        className="rounded-sm bg-green-500 px-3 py-1 text-neutral-50"
                     >
-                        Delete
+                        Update
                     </button>
                 </div>
             </ModalBox>

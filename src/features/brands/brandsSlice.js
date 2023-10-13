@@ -1,39 +1,43 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { createBrandsApi, getBrandsApi } from "../../services/brands";
+import { createSlice } from "@reduxjs/toolkit";
+import { brandsInitState as initialState } from "./brandsInitState";
+import { createBrands, deleteBrands, fetchBrands, updateBrands } from "./brandsThunkApi";
 
-const initialState = {
-    isError: false,
-    isLoading: true,
-    results: [],
-    currentPage: 1,
-    totalPage: 0,
-    status: ""
-}
-
-export const fetchBrands = createAsyncThunk("Brands/get",
-    async () => {
-        return await getBrandsApi();
-    })
-export const createBrands = createAsyncThunk("Brands/create",
-    async ({ body }) => {
-        return await createBrandsApi({ body });
-    })
-// export const deleteBrands = createAsyncThunk("Brands/delete",
-//     async ({ id }) => {
-//         const { data } = await deleteBrandsApi(id);
-//         if (data.status === "succeeded") {
-//             return id
-//         }
-//     })
-// export const updateBrands = createAsyncThunk("Brands/update",
-//     async (value) => {
-//         const { data } = await updateBrandsApi(value);
-//         return data
-//     })
 const brandsSlice = createSlice({
     name: "brands",
     initialState,
-    reducers: {},
+    reducers: {
+        setFormInput: (state, { payload }) => {
+            if (payload.name === "imagePreview") {
+                state.formInput[payload.name] = [payload.value]
+            } else {
+                state.formInput[payload.name] = payload.value
+            }
+        },
+        setIsCreate: (state) => {
+            state.isCreate = true;
+        },
+        setIsUpdate: (state, { payload }) => {
+            state.formInput = { ...payload, imagePreview: [payload.image] }
+            state.isUpdate = true;
+        },
+        setIsDelete: (state, { payload }) => {
+            state.formInput = { ...payload, imagePreview: [payload.image] }
+            state.isDelete = true;
+        },
+        clearFormInput: (state) => {
+            state.formInput = {
+                id: "",
+                name: "",
+                imagePreview: [],
+            }
+            state.isCreate = false
+            state.isDelete = false
+            state.isUpdate = false
+        },
+        removeImage: (state) => {
+            state.formInput.imagePreview = []
+        }
+    },
     extraReducers(builder) {
         builder
             .addCase(fetchBrands.pending, (state) => {
@@ -56,39 +60,44 @@ const brandsSlice = createSlice({
             })
             .addCase(createBrands.fulfilled, (state, { payload }) => {
                 state.status = "created";
+                state.isCreate = false;
                 state.results.push({ ...payload.results, image: import.meta.env.VITE_IMAGE_LINK + payload.results.image })
             })
             .addCase(createBrands.rejected, (state) => {
                 state.status = "failed";
             })
-        // .addCase(deleteCategories.pending, (state) => {
-        //     state.deleted = false;
-        // })
-        // .addCase(deleteCategories.fulfilled, (state, { payload }) => {
-        //     state.isLoading = false;
-        //     state.results = state.results.filter(result => result.id !== payload)
-        //     state.deleted = true;
-        // })
-        // .addCase(deleteCategories.rejected, (state) => {
-        //     state.deleted = false;
-        // })
-        // .addCase(updateCategories.pending, (state) => {
-        //     state.updated = false;
-        // })
-        // .addCase(updateCategories.fulfilled, (state, { payload }) => {
-        //     state.isLoading = false;
-        //     state.results = state.results.map(result => {
-        //         if (result.id === payload.results.id) {
-        //             return { ...result, ...payload.results }
-        //         }
-        //         return result
-        //     })
-        //     state.updated = true;
-        // })
-        // .addCase(updateCategories.rejected, (state) => {
-        //     state.updated = false;
-        // })
+            .addCase(deleteBrands.pending, (state) => {
+                state.status = "deleting";
+            })
+            .addCase(deleteBrands.fulfilled, (state, { payload }) => {
+                if (payload) {
+                    state.status = "deleted"
+                    state.isDelete = false;
+                    state.results = state.results.filter(result => result.id !== payload)
+                } else {
+                    state.status = "failed"
+                }
+            })
+            .addCase(deleteBrands.rejected, (state) => {
+                state.deleted = false;
+            })
+            .addCase(updateBrands.pending, (state) => {
+                state.status = "updating";
+            })
+            .addCase(updateBrands.fulfilled, (state, { payload }) => {
+                state.status = "updated"
+                state.isUpdate = false;
+                state.results = state.results.map(result => {
+                    if (result.id === payload.results.id) {
+                        return { ...result, ...payload.results, image: import.meta.env.VITE_IMAGE_LINK + payload.results.image }
+                    }
+                    return result
+                })
+            })
+            .addCase(updateBrands.rejected, (state) => {
+                state.updated = false;
+            })
     }
 })
-
+export const { setFormInput, setIsCreate, setIsDelete, setIsUpdate, clearFormInput, removeImage } = brandsSlice.actions;
 export default brandsSlice.reducer

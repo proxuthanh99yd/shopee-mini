@@ -1,43 +1,35 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { createCategoriesApi, deleteCategoriesApi, getCategoriesApi, updateCategoriesApi } from "../../services/categories";
+import { createSlice } from "@reduxjs/toolkit";
+import { categoriesInitState as initialState } from "./categoriesInitState";
+import { createCategories, deleteCategories, fetchCategories, updateCategories } from "./categoriesThunkApi";
 
-const initialState = {
-    isError: false,
-    isLoading: true,
-    results: [],
-    currentPage: 1,
-    totalPage: 0,
-    created: false,
-    deleted: false,
-    updated: false
-}
-
-export const fetchCategories = createAsyncThunk("Categories/get",
-    async () => {
-        const { data } = await getCategoriesApi();
-        return data
-    })
-export const createCategories = createAsyncThunk("Categories/create",
-    async ({ value }) => {
-        const { data } = await createCategoriesApi(value);
-        return data
-    })
-export const deleteCategories = createAsyncThunk("Categories/delete",
-    async ({ id }) => {
-        const { data } = await deleteCategoriesApi(id);
-        if (data.status === "succeeded") {
-            return id
-        }
-    })
-export const updateCategories = createAsyncThunk("Categories/update",
-    async (value) => {
-        const { data } = await updateCategoriesApi(value);
-        return data
-    })
 const categoriesSlice = createSlice({
     name: "categories",
     initialState,
-    reducers: {},
+    reducers: {
+        setFormInput: (state, { payload }) => {
+            state.formInput[payload.name] = payload.value
+        },
+        setIsCreate: (state) => {
+            state.isCreate = true;
+        },
+        setIsUpdate: (state, { payload }) => {
+            state.formInput = { ...payload }
+            state.isUpdate = true;
+        },
+        setIsDelete: (state, { payload }) => {
+            state.formInput = { ...payload }
+            state.isDelete = true;
+        },
+        clearFormInput: (state) => {
+            state.formInput = {
+                id: "",
+                name: "",
+            }
+            state.isCreate = false
+            state.isDelete = false
+            state.isUpdate = false
+        },
+    },
     extraReducers(builder) {
         builder
             .addCase(fetchCategories.pending, (state) => {
@@ -51,47 +43,52 @@ const categoriesSlice = createSlice({
             })
             .addCase(fetchCategories.rejected, (state) => {
                 state.isLoading = false;
-                state.isError = true
+                state.isError = true;
             })
             .addCase(createCategories.pending, (state) => {
-                state.created = false;
+                state.status = "creating";
             })
             .addCase(createCategories.fulfilled, (state, { payload }) => {
-                state.isLoading = false;
+                state.status = "created";
+                state.isCreate = false;
                 state.results.push(payload.results)
-                state.created = true;
             })
             .addCase(createCategories.rejected, (state) => {
-                state.created = false;
+                state.status = "failed";
             })
             .addCase(deleteCategories.pending, (state) => {
-                state.deleted = false;
+                state.status = "deleting";
             })
             .addCase(deleteCategories.fulfilled, (state, { payload }) => {
-                state.isLoading = false;
-                state.results = state.results.filter(result => result.id !== payload)
-                state.deleted = true;
+                if (payload) {
+                    state.isDelete = false;
+                    state.status = "deleted";
+                    state.results = state.results.filter(result => result.id !== payload)
+                } else {
+                    state.status = "failed";
+                }
             })
             .addCase(deleteCategories.rejected, (state) => {
-                state.deleted = false;
+                state.status = false;
             })
             .addCase(updateCategories.pending, (state) => {
-                state.updated = false;
+                state.status = "updating";
             })
             .addCase(updateCategories.fulfilled, (state, { payload }) => {
-                state.isLoading = false;
+                state.isUpdate = false;
+                state.status = "updated";
                 state.results = state.results.map(result => {
                     if (result.id === payload.results.id) {
                         return { ...result, ...payload.results }
                     }
                     return result
                 })
-                state.updated = true;
             })
             .addCase(updateCategories.rejected, (state) => {
-                state.updated = false;
+                state.status = "failed";
             })
     }
 })
 
+export const { setFormInput, setIsCreate, setIsDelete, setIsUpdate, clearFormInput } = categoriesSlice.actions
 export default categoriesSlice.reducer

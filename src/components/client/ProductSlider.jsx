@@ -1,4 +1,6 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
+
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -82,7 +84,7 @@ export default function ProductSlider({ images }) {
             >
                 {images.map((image) => {
                     return (
-                        <SwiperSlide key={image}>
+                        <SwiperSlide className="p-1" key={image}>
                             <img src={image} />
                         </SwiperSlide>
                     );
@@ -121,3 +123,7 @@ export default function ProductSlider({ images }) {
         </div>
     );
 }
+
+ProductSlider.propTypes = {
+    images: PropTypes.array,
+};

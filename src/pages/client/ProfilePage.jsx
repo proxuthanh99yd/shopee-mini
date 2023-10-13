@@ -1,4 +1,86 @@
+import { useDispatch, useSelector } from "react-redux";
+import { updateUserProfile } from "../../features/account/accountThunkApi";
+import { useEffect } from "react";
+import { useRef } from "react";
+import { toast } from "react-toastify";
+
 export default function ProfilePage() {
+    const { user, status, authToken, isAuthenticating } = useSelector(
+        (state) => state.account,
+    );
+    const dispatch = useDispatch();
+    const { address, email, name, phone, gender } = user;
+    const toastId = useRef(null);
+    useEffect(() => {
+        if (status === "updating") {
+            toastId.current = toast.loading("Updating");
+        }
+        if (status === "updated") {
+            toast.update(toastId.current, {
+                render: "Update success!",
+                type: "success",
+                isLoading: false,
+                autoClose: 2000,
+            });
+        }
+        if (status === "failed") {
+            toast.update(toastId.current, {
+                render: "Update failed!",
+                type: "error",
+                isLoading: false,
+                autoClose: 2000,
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [status]);
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        dispatch(
+            updateUserProfile({
+                authToken,
+                body: {
+                    name: formData.get("name"),
+                    address: formData.get("address"),
+                    gender: formData.get("gender"),
+                },
+            }),
+        );
+    };
+    if (isAuthenticating) {
+        return (
+            <div className="flex h-full w-full items-center justify-center">
+                <div className="loading">
+                    <div className="loadingSpinner">
+                        <div>
+                            <div></div>
+                        </div>
+                        <div>
+                            <div></div>
+                        </div>
+                        <div>
+                            <div></div>
+                        </div>
+                        <div>
+                            <div></div>
+                        </div>
+                        <div>
+                            <div></div>
+                        </div>
+                        <div>
+                            <div></div>
+                        </div>
+                        <div>
+                            <div></div>
+                        </div>
+                        <div>
+                            <div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
     return (
         <div className="w-full px-6 shadow-sm">
             <div className="border-b py-4">
@@ -7,24 +89,18 @@ export default function ProfilePage() {
                     Manage and protect your account
                 </p>
             </div>
-            <div className="mt-6 flex pb-3">
+            <form onSubmit={handleSubmit} className="mt-6 flex pb-3">
                 <div className="basis-9/12">
                     <table className="w-full border-collapse border border-neutral-400">
                         <tbody>
-                            <tr>
-                                <td className="w-4/12 border border-neutral-400 p-4 text-right text-neutral-500">
-                                    Username
-                                </td>
-                                <td className="border border-neutral-400 p-4">
-                                    proxuthanh
-                                </td>
-                            </tr>
                             <tr>
                                 <td className="w-4/12 border border-neutral-400 p-4 text-right text-neutral-500">
                                     Name
                                 </td>
                                 <td className="border border-neutral-400 p-4">
                                     <input
+                                        defaultValue={name}
+                                        name="name"
                                         type="text"
                                         className="w-full border p-2 focus:outline-none"
                                     />
@@ -35,12 +111,7 @@ export default function ProfilePage() {
                                     Email
                                 </td>
                                 <td className="border border-neutral-400 p-4">
-                                    <span className="mr-2">
-                                        pr************@gmail.com
-                                    </span>
-                                    <button className="text-blue-500 underline">
-                                        Change
-                                    </button>
+                                    <span className="mr-2">{email}</span>
                                 </td>
                             </tr>
                             <tr>
@@ -48,10 +119,7 @@ export default function ProfilePage() {
                                     Phone Number
                                 </td>
                                 <td className="border border-neutral-400 p-4">
-                                    <span className="mr-2">*********47</span>
-                                    <button className="text-blue-500 underline">
-                                        Change
-                                    </button>
+                                    <span className="mr-2">{phone}</span>
                                 </td>
                             </tr>
                             <tr>
@@ -61,6 +129,8 @@ export default function ProfilePage() {
                                 <td className="flex items-center gap-6 border border-neutral-400 p-4">
                                     <div className="flex gap-1">
                                         <input
+                                            defaultChecked={gender == 0}
+                                            value={0}
                                             type="radio"
                                             name="gender"
                                             id="male"
@@ -69,6 +139,8 @@ export default function ProfilePage() {
                                     </div>
                                     <div className="flex gap-1">
                                         <input
+                                            defaultChecked={gender == 1}
+                                            value={1}
                                             type="radio"
                                             name="gender"
                                             id="female"
@@ -77,6 +149,8 @@ export default function ProfilePage() {
                                     </div>
                                     <div className="flex gap-1">
                                         <input
+                                            defaultChecked={gender == 2}
+                                            value={2}
                                             type="radio"
                                             name="gender"
                                             id="other"
@@ -87,78 +161,23 @@ export default function ProfilePage() {
                             </tr>
                             <tr>
                                 <td className="w-4/12 border border-neutral-400 p-4 text-right text-neutral-500">
-                                    Date of birth
+                                    Address
                                 </td>
                                 <td className="flex items-center gap-6 border border-neutral-400 p-4">
-                                    <div className="flex-1">
-                                        <select
-                                            className="w-full rounded-sm bg-neutral-200 p-1"
-                                            name=""
-                                            id=""
-                                        >
-                                            {Array.from(
-                                                { length: 31 },
-                                                (_, i) => {
-                                                    return (
-                                                        <option
-                                                            value={i + 1}
-                                                            key={i + 1}
-                                                        >
-                                                            {i + 1}
-                                                        </option>
-                                                    );
-                                                },
-                                            )}
-                                        </select>
-                                    </div>
-                                    <div className="flex-1">
-                                        <select
-                                            className="w-full rounded-sm bg-neutral-200 p-1"
-                                            name=""
-                                            id=""
-                                        >
-                                            {Array.from(
-                                                { length: 12 },
-                                                (_, i) => {
-                                                    return (
-                                                        <option
-                                                            value={i + 1}
-                                                            key={i + 1}
-                                                        >
-                                                            {i + 1}
-                                                        </option>
-                                                    );
-                                                },
-                                            )}
-                                        </select>
-                                    </div>
-                                    <div className="flex-1">
-                                        <select
-                                            className="w-full rounded-sm bg-neutral-200 p-1"
-                                            name=""
-                                            id=""
-                                        >
-                                            {Array.from(
-                                                { length: 100 },
-                                                (_, i) => {
-                                                    return (
-                                                        <option
-                                                            value={2023 - i}
-                                                            key={2023 - i}
-                                                        >
-                                                            {2023 - i}
-                                                        </option>
-                                                    );
-                                                },
-                                            )}
-                                        </select>
-                                    </div>
+                                    <textarea
+                                        defaultValue={address}
+                                        name="address"
+                                        className="flex-1"
+                                    ></textarea>
                                 </td>
                             </tr>
                             <tr>
                                 <td className="w-4/12 border border-neutral-400 p-4 text-right text-neutral-500"></td>
                                 <td className="border border-neutral-400 p-4 text-center">
-                                    <button className="rounded-sm bg-orange-600 px-4 py-1 text-neutral-50">
+                                    <button
+                                        type="submit"
+                                        className="rounded-sm bg-orange-600 px-4 py-1 text-neutral-50"
+                                    >
                                         Save
                                     </button>
                                 </td>
@@ -172,7 +191,10 @@ export default function ProfilePage() {
                         className="h-28 w-28 rounded-full object-cover shadow"
                         alt=""
                     />
-                    <button className="rounded-sm border px-4 py-1.5 text-sm text-neutral-600">
+                    <button
+                        disabled
+                        className="rounded-sm border px-4 py-1.5 text-sm text-neutral-600"
+                    >
                         Select Image
                     </button>
 
@@ -183,7 +205,7 @@ export default function ProfilePage() {
                         File extension: .JPEG, .PNG
                     </span>
                 </div>
-            </div>
+            </form>
         </div>
     );
 }

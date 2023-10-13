@@ -9,9 +9,10 @@ import { useState } from "react";
 
 Navbar.propTypes = {
     setMenu: PropTypes.func,
+    name: PropTypes.string,
 };
 
-export default function Navbar({ setMenu }) {
+export default function Navbar({ setMenu, name }) {
     const [open, setOpen] = useState(false);
     return (
         <div className="flex items-center justify-between bg-gray-50 px-3">
@@ -47,7 +48,7 @@ export default function Navbar({ setMenu }) {
                     className="hidden items-center gap-1 hover:text-slate-400 sm:flex"
                     onClick={() => setOpen((curr) => !curr)}
                 >
-                    <p>Lee Tam</p>
+                    <p>{name}</p>
                     <IoChevronDownOutline />
                 </div>
                 <div

@@ -4,8 +4,12 @@ import {
     IoPersonOutline,
     IoReceiptOutline,
 } from "react-icons/io5";
+import { useSelector } from "react-redux";
 import { NavLink, Outlet } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 export default function AccountLayout() {
+    const { user } = useSelector((state) => state.account);
     return (
         <>
             <div className="container mx-auto my-6 flex gap-8 px-2 pb-2 xl:max-w-7xl">
@@ -18,7 +22,7 @@ export default function AccountLayout() {
                         />
                         <div className="flex flex-col">
                             <span className="text-base font-semibold">
-                                Username
+                                {user.name}
                             </span>
                             <button className="flex items-center text-sm text-neutral-500">
                                 <IoCreateOutline /> Edit Profile
@@ -59,6 +63,7 @@ export default function AccountLayout() {
                     <Outlet />
                 </div>
             </div>
+            <ToastContainer />
         </>
     );
 }

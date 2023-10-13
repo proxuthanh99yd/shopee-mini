@@ -46,7 +46,11 @@ export default function SelectImage({
                         key={file}
                         className={`${className} relative flex cursor-pointer items-center justify-center rounded border border-dashed border-neutral-500 bg-neutral-50`}
                     >
-                        <img className="object-cover" src={file} alt="" />
+                        <img
+                            className="w-2h-24 h-24 object-contain"
+                            src={file}
+                            alt=""
+                        />
                         <button
                             onClick={() => removeImage(i)}
                             className="absolute bottom-0 flex w-full justify-center bg-orange-400 p-1"
@@ -61,7 +65,7 @@ export default function SelectImage({
                         className={`relative flex h-full w-full cursor-pointer items-center justify-center rounded border border-dashed border-neutral-500 bg-neutral-50`}
                     >
                         <img
-                            className="object-cover"
+                            className="w-5h-56 h-56 object-contain"
                             src={imagePreviews[0]}
                             alt=""
                         />

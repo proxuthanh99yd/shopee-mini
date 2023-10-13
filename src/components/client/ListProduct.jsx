@@ -1,6 +1,12 @@
 import { IoChevronBack, IoChevronForward, IoStar } from "react-icons/io5";
-
-export default function ListProduct() {
+import PropTypes from "prop-types";
+import {
+    discountCalculator,
+    maxPriceCalculator,
+    minPriceCalculator,
+} from "../../utils/helper";
+import { Link } from "react-router-dom";
+export default function ListProduct({ productResults }) {
     return (
         <>
             <div className="flex justify-between rounded-sm bg-neutral-200 p-3">
@@ -46,26 +52,36 @@ export default function ListProduct() {
                 </div>
             </div>
             <div className="mt-2 grid grid-cols-5 gap-4 p-2">
-                {Array.from({ length: 20 }, (_, i) => {
+                {productResults.map((product) => {
                     return (
-                        <div
+                        <Link
+                            to={`/product/${product.id}`}
                             className="cursor-pointer rounded-sm bg-neutral-50 shadow-sm transition-transform hover:-translate-y-0.5 hover:shadow"
-                            key={i}
+                            key={product.id}
                         >
-                            <div>
+                            <div className="p-4">
                                 <img
                                     className="h-full w-full object-cover"
-                                    src="../public/images/product.jpg"
+                                    src={product.image}
                                     alt=""
                                 />
                             </div>
                             <div className="p-2">
                                 <p className="line-clamp-2 text-sm">
-                                    Bộ giấy vệ sinh dây sạc nhanh PD20W Bu27,cáp
-                                    sạc bọc dù chống đứt, xạc nhanh truyền dữ
-                                    liệu
+                                    {product.name}
                                 </p>
-                                <span className="my-2 block">$80000</span>
+                                <span className="my-2 block text-orange-500">
+                                    $
+                                    {discountCalculator(
+                                        minPriceCalculator(product.classify),
+                                        product.discount,
+                                    ).toFixed(1)}
+                                    {" - "}$
+                                    {discountCalculator(
+                                        maxPriceCalculator(product.classify),
+                                        product.discount,
+                                    ).toFixed(1)}
+                                </span>
                                 <div className="flex items-center gap-1 text-yellow-500">
                                     <span className="flex">
                                         <IoStar />
@@ -79,7 +95,7 @@ export default function ListProduct() {
                                     </span>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     );
                 })}
             </div>
@@ -143,3 +159,7 @@ export default function ListProduct() {
         </>
     );
 }
+
+ListProduct.propTypes = {
+    productResults: PropTypes.array,
+};

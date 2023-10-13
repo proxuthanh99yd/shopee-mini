@@ -7,7 +7,6 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
-    fetchSingleProduct,
     handleInput,
     removeClassify,
     removeImagePreview,
@@ -15,25 +14,49 @@ import {
     setImagePreview,
     setNewClassify,
     setThumbPreview,
-    updateProducts,
 } from "../../../features/products/productsSlice";
-import { fetchCategories } from "../../../features/categories/categoriesSlice";
-import { fetchBrands } from "../../../features/brands/brandsSlice";
+import {
+    fetchSingleProduct,
+    updateProducts,
+} from "../../../features/products/productsThunkApi";
+import { fetchCategories } from "../../../features/categories/categoriesThunkApi";
+import { fetchBrands } from "../../../features/brands/brandsThunkApi";
+import { toast } from "react-toastify";
 
 export default function EditProduct() {
     const { id } = useParams();
-    const { edit: product, isLoading } = useSelector((state) => state.products);
+    const {
+        edit: product,
+        isLoading,
+        status,
+    } = useSelector((state) => state.products);
     const { results: categories } = useSelector((state) => state.categories);
     const { results: brands } = useSelector((state) => state.brands);
     const dispatch = useDispatch();
     const imageRef = useRef({});
     const thumbRef = useRef([]);
+    const toastId = useRef(null);
     useEffect(() => {
         dispatch(fetchSingleProduct({ id }));
         dispatch(fetchCategories());
         dispatch(fetchBrands());
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
+    useEffect(() => {
+        if (status === "updating") {
+            toastId.current = toast.loading("Updating");
+        }
+        if (status === "updated") {
+            toast.update(toastId.current, {
+                render: "Update success!",
+                type: "success",
+                isLoading: false,
+                autoClose: 2000,
+            });
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [status]);
     useEffect(() => {
         if (product?.image) {
             imageRef.current = product.image;

@@ -4,8 +4,8 @@ import {
     IoStar,
     IoStarOutline,
 } from "react-icons/io5";
-
-export default function Sidebar() {
+import PropTypes from "prop-types";
+export default function Sidebar({ brandResults, categoryResults }) {
     return (
         <>
             <div>
@@ -13,14 +13,13 @@ export default function Sidebar() {
                     <IoListSharp className="text-lg font-bold" /> All Categories
                 </h3>
                 <ul className="py-2 text-sm">
-                    <li className="p-1">Mobile Phones</li>
-                    <li className="p-1">Mobile Phones</li>
-                    <li className="p-1">Mobile Phones</li>
-                    <li className="p-1">Mobile Phones</li>
-                    <li className="p-1">Mobile Phones</li>
-                    <li className="p-1">Mobile Phones</li>
-                    <li className="p-1">Mobile Phones</li>
-                    <li className="p-1">Mobile Phones</li>
+                    {categoryResults.map((category) => {
+                        return (
+                            <li key={category.id} className="p-1 uppercase">
+                                {category.name}
+                            </li>
+                        );
+                    })}
                 </ul>
             </div>
             <div>
@@ -30,34 +29,24 @@ export default function Sidebar() {
                 </h3>
                 <h5 className="pt-2 text-base">Brands</h5>
                 <ul className="border-b border-neutral-300/80 py-2 text-sm">
-                    <li className="flex items-center gap-1 py-1">
-                        <input type="checkbox" name="" id="" />
-                        <label className="uppercase">Mobile Phones</label>
-                    </li>
-                    <li className="flex items-center gap-1 py-1">
-                        <input type="checkbox" name="" id="" />
-                        <label className="uppercase">Mobile Phones</label>
-                    </li>
-                    <li className="flex items-center gap-1 py-1">
-                        <input type="checkbox" name="" id="" />
-                        <label className="uppercase">Mobile Phones</label>
-                    </li>
-                    <li className="flex items-center gap-1 py-1">
-                        <input type="checkbox" name="" id="" />
-                        <label className="uppercase">Mobile Phones</label>
-                    </li>
-                    <li className="flex items-center gap-1 py-1">
-                        <input type="checkbox" name="" id="" />
-                        <label className="uppercase">Mobile Phones</label>
-                    </li>
-                    <li className="flex items-center gap-1 py-1">
-                        <input type="checkbox" name="" id="" />
-                        <label className="uppercase">Mobile Phones</label>
-                    </li>
-                    <li className="flex items-center gap-1 py-1">
-                        <input type="checkbox" name="" id="" />
-                        <label className="uppercase">Mobile Phones</label>
-                    </li>
+                    {brandResults.map((brand) => {
+                        return (
+                            <li
+                                key={brand.id}
+                                className="flex items-center gap-1 py-1"
+                            >
+                                <input
+                                    type="checkbox"
+                                    name="brands"
+                                    defaultValue={brand.id}
+                                    id=""
+                                />
+                                <label className="uppercase">
+                                    {brand.name}
+                                </label>
+                            </li>
+                        );
+                    })}
                 </ul>
                 <h5 className="pt-2 text-base">Price Range</h5>
                 <div className="flex flex-col gap-3 border-b border-neutral-300/80 py-2 text-sm">
@@ -128,3 +117,8 @@ export default function Sidebar() {
         </>
     );
 }
+
+Sidebar.propTypes = {
+    brandResults: PropTypes.array,
+    categoryResults: PropTypes.array,
+};

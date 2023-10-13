@@ -3,10 +3,10 @@ import { SelectImage } from "../../../components/admin";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories } from "../../../features/categories/categoriesSlice";
-import { fetchBrands } from "../../../features/brands/brandsSlice";
+import { fetchCategories } from "../../../features/categories/categoriesThunkApi";
+import { fetchBrands } from "../../../features/brands/brandsThunkApi";
 import {
-    createProducts,
+    clearForm,
     handleInput,
     removeClassify,
     removeImagePreview,
@@ -15,14 +15,17 @@ import {
     setNewClassify,
     setThumbPreview,
 } from "../../../features/products/productsSlice";
-
+import { createProducts } from "../../../features/products/productsThunkApi";
+import { toast } from "react-toastify";
 export default function CreateProduct() {
-    const { create: product } = useSelector((state) => state.products);
+    const { authToken } = useSelector((state) => state.account);
+    const { create: product, status } = useSelector((state) => state.products);
     const { results: categories } = useSelector((state) => state.categories);
     const { results: brands } = useSelector((state) => state.brands);
     const dispatch = useDispatch();
     const imageRef = useRef({});
     const thumbRef = useRef([]);
+    const toastId = useRef(null);
     useEffect(() => {
         dispatch(fetchCategories());
         dispatch(fetchBrands());
@@ -36,7 +39,22 @@ export default function CreateProduct() {
             thumbRef.current = product.thumbnails;
         }
     }, [product.image, product.thumbnails]);
+    useEffect(() => {
+        if (status === "creating") {
+            toastId.current = toast.loading("Creating");
+        }
+        if (status === "created") {
+            toast.update(toastId.current, {
+                render: "Create success!",
+                type: "success",
+                isLoading: false,
+                autoClose: 2000,
+            });
+            handleClear();
+        }
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [status]);
     const handleCreate = () => {
         const formData = new FormData();
         formData.append("name", product.name);
@@ -55,7 +73,7 @@ export default function CreateProduct() {
             formData.append(`price[${i + 1}]`, e.price);
             formData.append(`stock[${i + 1}]`, e.stock);
         });
-        dispatch(createProducts(formData));
+        dispatch(createProducts({ authToken, value: formData }));
     };
 
     const handleImageSelected = (image) => {
@@ -74,6 +92,11 @@ export default function CreateProduct() {
         thumbRef.current = thumbRef.current.filter((_, i) => {
             return i !== index;
         });
+    };
+    const handleClear = () => {
+        dispatch(clearForm());
+        imageRef.current = {};
+        thumbRef.current = [];
     };
     return (
         <div className="bg-neutral-50">

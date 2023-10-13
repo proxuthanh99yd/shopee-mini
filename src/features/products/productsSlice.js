@@ -1,80 +1,7 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { createProductsApi, deleteProductsApi, getProductsApi, getSingleProductApi, updateProductsApi } from "../../services/products";
+import { createSlice } from "@reduxjs/toolkit";
+import { productsInitState as initialState } from "./productsInitState";
+import { createProducts, deleteProducts, fetchProducts, fetchSingleProduct, updateProducts } from "./productsThunkApi";
 
-const initialState = {
-    isError: false,
-    isLoading: true,
-    results: [],
-    currentPage: 1,
-    totalPage: 0,
-    create: {
-        name: '',
-        description: '',
-        image: [],
-        imagePreview: [],
-        active: 0,
-        discount: 0,
-        category_id: 0,
-        brand_id: 0,
-        thumbnails: [],
-        classification: {
-            name: ""
-        },
-        classify: [{
-            name: "",
-            price: 0,
-            stock: 0
-        }],
-        thumbPreviews: []
-    },
-    deleted: false,
-    edit: {
-        id: '',
-        name: '',
-        description: '',
-        image: [],
-        imagePreview: [],
-        active: '',
-        discount: '',
-        category_id: '',
-        brand_id: '',
-        thumbnails: [],
-        classification: {},
-        classify: [],
-        thumbPreviews: []
-    },
-    status: ""
-}
-
-export const fetchProducts = createAsyncThunk("Products/get",
-    async () => {
-        const { data } = await getProductsApi();
-        return data
-    })
-
-export const fetchSingleProduct = createAsyncThunk("SingleProduct/get",
-    async ({ id }) => {
-        const { data } = await getSingleProductApi({ id });
-        return data
-    })
-
-export const createProducts = createAsyncThunk("Products/create",
-    async (value) => {
-        const { data } = await createProductsApi(value);
-        return data
-    })
-export const deleteProducts = createAsyncThunk("Products/delete",
-    async ({ id }) => {
-        const { data } = await deleteProductsApi(id);
-        if (data.status === "succeeded") {
-            return id
-        }
-    })
-export const updateProducts = createAsyncThunk("Products/update",
-    async (value) => {
-        const { data } = await updateProductsApi(value);
-        return data
-    })
 const productsSlice = createSlice({
     name: "Products",
     initialState,
@@ -133,6 +60,38 @@ const productsSlice = createSlice({
         },
         removeImagePreview: (state, { payload }) => {
             state[payload.type].imagePreview = []
+        },
+        clearForm: (state) => {
+            state.create = {
+                name: '',
+                description: '',
+                image: [],
+                imagePreview: [],
+                active: 0,
+                discount: 0,
+                category_id: 0,
+                brand_id: 0,
+                thumbnails: [],
+                classification: {
+                    name: ""
+                },
+                classify: [{
+                    name: "",
+                    price: 0,
+                    stock: 0
+                }],
+                thumbPreviews: []
+            }
+        },
+        setFilter: (state, { payload }) => {
+            state.filter = payload.param
+            state.currentPage = 1
+        },
+        setCurrentPage: (state, { payload }) => {
+            state.currentPage = payload.currentPage
+        },
+        setSearchParam: (state, { payload }) => {
+            state.searchParam = payload.searchParam
         }
 
     },
@@ -143,9 +102,13 @@ const productsSlice = createSlice({
             })
             .addCase(fetchProducts.fulfilled, (state, { payload }) => {
                 state.isLoading = false;
-                state.results = payload.results.data;
+                state.results = payload.results.data.reduce((prev, curr) => {
+                    return [...prev, { ...curr, image: import.meta.env.VITE_IMAGE_LINK + curr.image }]
+                }, [])
                 state.currentPage = payload.results.current_page;
-                state.totalPage = payload.results.total;
+                state.totalPage = payload.results.last_page;
+                state.links = payload.results.links;
+
             })
             .addCase(fetchProducts.rejected, (state) => {
                 state.isLoading = false;
@@ -178,14 +141,14 @@ const productsSlice = createSlice({
                 state.isError = true
             })
             .addCase(createProducts.pending, (state) => {
-                // state.isLoading = true;
+                state.status = "creating";
             })
             .addCase(createProducts.fulfilled, (state, { payload }) => {
-                // state.isLoading = false;
+                state.status = "created";
                 state.results.push(payload.results)
             })
             .addCase(createProducts.rejected, (state) => {
-                state.created = false;
+                state.status = "failed";
             })
             .addCase(deleteProducts.pending, (state) => {
                 state.deleted = false;
@@ -199,7 +162,7 @@ const productsSlice = createSlice({
                 state.deleted = false;
             })
             .addCase(updateProducts.pending, (state) => {
-                state.updated = false;
+                state.status = "updating";
             })
             .addCase(updateProducts.fulfilled, (state, { payload }) => {
                 state.isLoading = false;
@@ -209,10 +172,10 @@ const productsSlice = createSlice({
                     }
                     return result
                 })
-                state.updated = true;
+                state.status = "updated";
             })
             .addCase(updateProducts.rejected, (state) => {
-                state.updated = false;
+                state.status = "failed";
             })
     }
 })
@@ -224,6 +187,10 @@ export const {
     setThumbPreview,
     setImagePreview,
     removeImagePreview,
-    removeThumbPreview
+    removeThumbPreview,
+    clearForm,
+    setFilter,
+    setCurrentPage,
+    setSearchParam
 } = productsSlice.actions
 export default productsSlice.reducer

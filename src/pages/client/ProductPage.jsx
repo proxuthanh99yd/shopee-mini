@@ -3,27 +3,13 @@ import { IoChevronBack, IoChevronForward, IoStar } from "react-icons/io5";
 import { ProductSlider, SameProductSlider } from "../../components/client";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { fetchSingleProduct } from "../../features/products/productsSlice";
+import { fetchSingleProduct } from "../../features/products/productsThunkApi";
 import { useParams } from "react-router-dom";
-
-function minPriceCalculator(prices) {
-    let min = prices[0].price;
-    prices.forEach((element) => {
-        min = Math.min(min, element.price);
-    });
-    return min;
-}
-function maxPriceCalculator(prices) {
-    let max = prices[0].price;
-    prices.forEach((element) => {
-        max = Math.max(max, element.price);
-    });
-    return max;
-}
-
-function discountCalculator(price, discount) {
-    return price - price * (discount / 100);
-}
+import {
+    discountCalculator,
+    maxPriceCalculator,
+    minPriceCalculator,
+} from "../../utils/helper";
 
 export default function ProductPage() {
     const { id } = useParams();
@@ -35,7 +21,8 @@ export default function ProductPage() {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(fetchSingleProduct({ id }));
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id]);
 
     if (isLoading) {
         return <p>Loading</p>;
@@ -91,28 +78,38 @@ export default function ProductPage() {
                         <div className="mt-3 flex items-center gap-5 bg-neutral-200 p-4">
                             <div className="text-xs text-neutral-500 line-through">
                                 <span>
-                                    ${minPriceCalculator(results.classify)}
+                                    $
+                                    {results?.classify[0] &&
+                                        minPriceCalculator(results.classify)}
                                 </span>
                                 -
                                 <span>
-                                    ${maxPriceCalculator(results.classify)}
+                                    $
+                                    {results?.classify[0] &&
+                                        maxPriceCalculator(results.classify)}
                                 </span>
                             </div>
                             <div className="text-lg text-orange-500 ">
                                 <span>
                                     $
-                                    {discountCalculator(
-                                        minPriceCalculator(results.classify),
-                                        results.discount,
-                                    ).toFixed(2)}{" "}
+                                    {results?.classify[0] &&
+                                        discountCalculator(
+                                            minPriceCalculator(
+                                                results.classify,
+                                            ),
+                                            results.discount,
+                                        ).toFixed(2)}{" "}
                                 </span>
                                 -{" "}
                                 <span>
                                     $
-                                    {discountCalculator(
-                                        maxPriceCalculator(results.classify),
-                                        results.discount,
-                                    ).toFixed(2)}
+                                    {results?.classify[0] &&
+                                        discountCalculator(
+                                            maxPriceCalculator(
+                                                results.classify,
+                                            ),
+                                            results.discount,
+                                        ).toFixed(2)}
                                 </span>
                             </div>
                             <div className="bg-orange-500 text-xs text-neutral-50">
