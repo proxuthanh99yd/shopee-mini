@@ -18,7 +18,6 @@ import {
 import { createProducts } from "../../../features/products/productsThunkApi";
 import { toast } from "react-toastify";
 export default function CreateProduct() {
-    const { authToken } = useSelector((state) => state.account);
     const { create: product, status } = useSelector((state) => state.products);
     const { results: categories } = useSelector((state) => state.categories);
     const { results: brands } = useSelector((state) => state.brands);
@@ -73,7 +72,7 @@ export default function CreateProduct() {
             formData.append(`price[${i + 1}]`, e.price);
             formData.append(`stock[${i + 1}]`, e.stock);
         });
-        dispatch(createProducts({ authToken, value: formData }));
+        dispatch(createProducts({ body: formData }));
     };
 
     const handleImageSelected = (image) => {
