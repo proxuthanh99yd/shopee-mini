@@ -14,6 +14,7 @@
     "@ckeditor/ckeditor5-react": "^6.1.0",
     "@reduxjs/toolkit": "^1.9.5",
     "axios": "^1.5.0",
+    "html-react-parser": "^4.2.9",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",

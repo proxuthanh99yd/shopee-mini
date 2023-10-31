@@ -1,31 +1,139 @@
 import Breadcrumb from "../../components/Breadcrumb";
-import { IoChevronBack, IoChevronForward, IoStar } from "react-icons/io5";
+import { IoStar } from "react-icons/io5";
 import { ProductSlider, SameProductSlider } from "../../components/client";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { fetchSingleProduct } from "../../features/products/productsThunkApi";
-import { useParams } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { fetchSingleProduct } from "../../features/client/products/productsThunkApi";
 import {
+    Link,
+    useNavigate,
+    useOutletContext,
+    useParams,
+} from "react-router-dom";
+import {
+    addToCartCalculator,
     discountCalculator,
     maxPriceCalculator,
     minPriceCalculator,
+    stockCalculator,
 } from "../../utils/helper";
+import {
+    clearSelect,
+    decrementProduct,
+    incrementProduct,
+    setQuantity,
+    setSelected,
+} from "../../features/client/carts/cartsSlice";
+import { addCart, buyNowCart } from "../../features/client/carts/cartsThunkApi";
+import { toast } from "react-toastify";
+import parse from "html-react-parser";
+import Loading from "../../components/Loading";
 
 export default function ProductPage() {
+    const navigate = useNavigate();
+    const { isAuthenticated, isLogin } = useOutletContext();
     const { id } = useParams();
+    const { result, isError, isLoading, sameProducts } = useSelector(
+        (state) => state.products,
+    );
     const {
-        edit: results,
-        isError,
-        isLoading,
-    } = useSelector((state) => state.products);
+        selected,
+        addToCartForm,
+        myCart,
+        toastLoading,
+        toastSuccess,
+        toastError,
+        loadingMessage,
+        successMessage,
+        errorMessage,
+    } = useSelector((state) => state.carts);
     const dispatch = useDispatch();
+    const toastId = useRef(null);
     useEffect(() => {
         dispatch(fetchSingleProduct({ id }));
+        dispatch(clearSelect());
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
+    useEffect(() => {
+        localStorage.setItem("myCart", JSON.stringify(myCart));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [myCart]);
+    useEffect(() => {
+        for (const item of myCart) {
+            if (
+                item.productId == selected.productId &&
+                item.classifyId == selected.classifyId
+            ) {
+                dispatch(
+                    setSelected({
+                        productId: id,
+                        classifyId: item.classifyId,
+                        stock: selected.stock - item.quantity,
+                    }),
+                );
+                break;
+            }
+        }
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selected.classifyId]);
+    useEffect(() => {
+        if (toastLoading) {
+            toastId.current = toast.loading(loadingMessage);
+        }
+        if (toastSuccess) {
+            dispatch(clearSelect());
+            toast.update(toastId.current, {
+                render: successMessage,
+                type: "success",
+                isLoading: false,
+                autoClose: 2000,
+            });
+        }
+        if (toastError) {
+            toast.update(toastId.current, {
+                render: errorMessage,
+                type: "error",
+                isLoading: false,
+                autoClose: 2000,
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [toastLoading, toastSuccess, toastError]);
+    const handleSelect = (item) => {
+        dispatch(
+            setSelected({
+                productId: id,
+                classifyId: item.id,
+                stock: item.stock,
+            }),
+        );
+    };
+    const handleAddToCard = () => {
+        dispatch(
+            addCart({
+                body: {
+                    productId: addToCartForm.productId,
+                    classifyId: addToCartForm.classifyId,
+                    quantity: addToCartForm.quantity,
+                },
+            }),
+        );
+    };
+    const handleBuyNow = () => {
+        dispatch(
+            buyNowCart({
+                body: {
+                    productId: addToCartForm.productId,
+                    classifyId: addToCartForm.classifyId,
+                    quantity: addToCartForm.quantity,
+                },
+            }),
+        );
+        navigate("/cart");
+    };
     if (isLoading) {
-        return <p>Loading</p>;
+        return <Loading />;
     }
     if (isError) {
         return <p>isError</p>;
@@ -37,22 +145,18 @@ export default function ProductPage() {
                 <div className="container mx-auto p-2 xl:max-w-7xl">
                     <Breadcrumb
                         currentLink={{
-                            name: "productName",
-                            path: "productLink",
+                            name: `${result.name}`,
+                            path: `/product/${id}`,
                         }}
-                        prevLinks={[
-                            { name: "Home", path: "home" },
-                            { name: "Category", path: "productLink" },
-                            { name: "Brand", path: "productLink" },
-                        ]}
+                        prevLinks={[{ name: "Home", path: "/" }]}
                     />
                 </div>
                 <div className="container mx-auto mt-2 flex gap-10 rounded-sm bg-neutral-100 p-2 xl:max-w-7xl">
                     <div>
-                        <ProductSlider images={results.thumbPreviews} />
+                        <ProductSlider images={result.thumbPreviews} />
                     </div>
                     <div className="flex flex-col justify-between pb-2">
-                        <h1 className="text-xl">{results.name}</h1>
+                        <h1 className="text-xl">{result.name}</h1>
                         <div className="mt-3 flex gap-3">
                             <div className="flex items-center gap-1 text-orange-500">
                                 <span className="underline">5.0</span>
@@ -72,60 +176,63 @@ export default function ProductPage() {
                             </div>
                             <div>
                                 <span className="mr-1">2,1k</span>
-                                <span className="text-neutral-500">Sold</span>
+                                <span className="text-neutral-500">
+                                    {stockCalculator(result.classify)} Sold
+                                </span>
                             </div>
                         </div>
                         <div className="mt-3 flex items-center gap-5 bg-neutral-200 p-4">
                             <div className="text-xs text-neutral-500 line-through">
                                 <span>
                                     $
-                                    {results?.classify[0] &&
-                                        minPriceCalculator(results.classify)}
+                                    {result?.classify[0] &&
+                                        minPriceCalculator(result.classify)}
                                 </span>
                                 -
                                 <span>
                                     $
-                                    {results?.classify[0] &&
-                                        maxPriceCalculator(results.classify)}
+                                    {result?.classify[0] &&
+                                        maxPriceCalculator(result.classify)}
                                 </span>
                             </div>
                             <div className="text-lg text-orange-500 ">
                                 <span>
                                     $
-                                    {results?.classify[0] &&
+                                    {result?.classify[0] &&
                                         discountCalculator(
-                                            minPriceCalculator(
-                                                results.classify,
-                                            ),
-                                            results.discount,
+                                            minPriceCalculator(result.classify),
+                                            result.discount,
                                         ).toFixed(2)}{" "}
                                 </span>
                                 -{" "}
                                 <span>
                                     $
-                                    {results?.classify[0] &&
+                                    {result?.classify[0] &&
                                         discountCalculator(
-                                            maxPriceCalculator(
-                                                results.classify,
-                                            ),
-                                            results.discount,
+                                            maxPriceCalculator(result.classify),
+                                            result.discount,
                                         ).toFixed(2)}
                                 </span>
                             </div>
                             <div className="bg-orange-500 text-xs text-neutral-50">
-                                <span>{results.discount}% OFF</span>
+                                <span>{result.discount}% OFF</span>
                             </div>
                         </div>
                         <div className="mt-3 flex items-center gap-10">
                             <span className="text-neutral-600">
-                                {results.classification.name}
+                                {result.classification.name}
                             </span>
                             <div className="flex items-center justify-center gap-2">
-                                {results.classify.map((item) => {
+                                {result.classify.map((item) => {
                                     return (
                                         <button
+                                            onClick={() => handleSelect(item)}
                                             key={item.id}
-                                            className="rounded-sm border bg-neutral-50 px-3 py-1 shadow-sm hover:border-orange-500 hover:text-orange-500"
+                                            className={`${
+                                                selected.classifyId === item.id
+                                                    ? "border-orange-500 text-orange-500"
+                                                    : ""
+                                            } rounded-sm border bg-neutral-50 px-3 py-1 shadow-sm hover:border-orange-500 hover:text-orange-500`}
                                         >
                                             {item.name}
                                         </button>
@@ -136,29 +243,82 @@ export default function ProductPage() {
                         <div className="mt-3 flex items-center gap-10">
                             <span className="text-neutral-600">Quantity</span>
                             <div>
-                                <button className="w-8 border bg-neutral-50">
+                                <button
+                                    onClick={() => dispatch(decrementProduct())}
+                                    className="w-8 border bg-neutral-50"
+                                >
                                     -
                                 </button>
                                 <input
                                     type="number"
+                                    value={addToCartForm.quantity}
+                                    onChange={(e) =>
+                                        dispatch(
+                                            setQuantity({
+                                                quantity: e.target.value,
+                                            }),
+                                        )
+                                    }
                                     className="w-10 border text-center"
                                     onWheel={(e) => e.target.blur()}
                                 />
-                                <button className="w-8 border bg-neutral-50">
+                                <button
+                                    onClick={() => dispatch(incrementProduct())}
+                                    className="w-8 border bg-neutral-50"
+                                >
                                     +
                                 </button>
                                 <span className="ml-4 text-sm text-neutral-600">
-                                    4928 pieces available
+                                    {addToCartCalculator(
+                                        selected.classifyId,
+                                        selected.stock,
+                                        myCart,
+                                    )}
                                 </span>
                             </div>
                         </div>
                         <div className="mt-4 flex items-center gap-5">
-                            <button className="border border-orange-500 bg-orange-100 px-10 py-2 text-orange-500 hover:opacity-80">
-                                Add To Cart
-                            </button>
-                            <button className="border border-orange-500 bg-orange-500 px-10 py-2 text-neutral-50 hover:opacity-80">
-                                Buy Now
-                            </button>
+                            {isAuthenticated || isLogin ? (
+                                <>
+                                    <button
+                                        onClick={handleAddToCard}
+                                        disabled={
+                                            Number(addToCartForm.quantity) === 0
+                                                ? true
+                                                : false
+                                        }
+                                        className="border border-orange-500 bg-orange-100 px-10 py-2 text-orange-500 hover:opacity-80"
+                                    >
+                                        Add To Cart
+                                    </button>
+                                    <button
+                                        onClick={handleBuyNow}
+                                        disabled={
+                                            Number(addToCartForm.quantity) === 0
+                                                ? true
+                                                : false
+                                        }
+                                        className="border border-orange-500 bg-orange-500 px-10 py-2 text-neutral-50 hover:opacity-80"
+                                    >
+                                        Buy Now
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link
+                                        to="/login"
+                                        className="border border-orange-500 bg-orange-100 px-10 py-2 text-orange-500 hover:opacity-80"
+                                    >
+                                        Add To Cart
+                                    </Link>
+                                    <Link
+                                        to="/login"
+                                        className="border border-orange-500 bg-orange-500 px-10 py-2 text-neutral-50 hover:opacity-80"
+                                    >
+                                        Buy Now
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -179,9 +339,11 @@ export default function ProductPage() {
                             </span>
                         </div>
                         <div className="flex flex-col gap-3">
-                            <span>Apple</span>
-                            <span>Stock 182</span>
-                            <span>stocks 2584</span>
+                            <span>{result.brand.name}</span>
+                            <span>{result.discount}%</span>
+                            <span>
+                                stocks {stockCalculator(result.classify)}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -189,13 +351,18 @@ export default function ProductPage() {
                     <h2 className="bg-neutral-200 p-2 text-lg ">
                         Product Description
                     </h2>
-                    <div className="p-2">content</div>
+                    <div
+                        className="p-2"
+                        // dangerouslySetInnerHTML={{ __html: result.description }}
+                    >
+                        {parse(result.description)}
+                    </div>
                 </div>
                 <div className="container mx-auto mt-2 rounded-sm bg-neutral-100 p-2 xl:max-w-7xl">
-                    <h2 className="bg-neutral-200 p-2 text-lg ">
+                    {/* <h2 className="bg-neutral-200 p-2 text-lg ">
                         Product Ratings
-                    </h2>
-                    <div className="p-2">
+                    </h2> */}
+                    {/* <div className="p-2">
                         <div className="flex items-center gap-10 border border-orange-200 bg-orange-50 px-6 py-10">
                             <div className="text-center text-orange-500">
                                 <span className="text-2xl font-semibold">
@@ -234,8 +401,8 @@ export default function ProductPage() {
                                 </button>
                             </div>
                         </div>
-                    </div>
-                    <div className="px-4">
+                    </div> */}
+                    {/* <div className="px-4">
                         {Array.from({ length: 5 }, (_, i) => {
                             return (
                                 <div
@@ -267,8 +434,8 @@ export default function ProductPage() {
                                 </div>
                             );
                         })}
-                    </div>
-                    <nav
+                    </div> */}
+                    {/* <nav
                         className="mt-3 flex justify-center"
                         aria-label="Pagination"
                     >
@@ -282,8 +449,7 @@ export default function ProductPage() {
                                 aria-hidden="true"
                             />
                         </a>
-                        {/* Current: "z-10 bg-orange-500 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500", Default: "text-gray-900  ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
-                        <a
+                       <a
                             href="#"
                             aria-current="page"
                             className="relative z-10 inline-flex items-center bg-orange-500 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
@@ -333,14 +499,14 @@ export default function ProductPage() {
                                 aria-hidden="true"
                             />
                         </a>
-                    </nav>
+                    </nav> */}
                 </div>
                 <div className="container mx-auto mt-2 rounded-sm  p-2 xl:max-w-7xl">
                     <h2 className="p-2 text-lg uppercase text-neutral-600">
                         The same products
                     </h2>
                     <div className="p-2">
-                        <SameProductSlider />
+                        <SameProductSlider sameProducts={sameProducts} />
                     </div>
                 </div>
             </div>

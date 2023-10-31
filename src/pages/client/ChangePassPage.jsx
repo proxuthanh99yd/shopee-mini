@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
-import { setChangePassword } from "../../features/account/accountSlice";
-import { changePassword as changePass } from "../../features/account/accountThunkApi";
+import { setChangePassword } from "../../features/client/account/accountSlice";
+import { changePassword as changePass } from "../../features/client/account/accountThunkApi";
 import { toast } from "react-toastify";
 import { useRef } from "react";
 import { useEffect } from "react";

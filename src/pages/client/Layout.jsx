@@ -2,30 +2,41 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { Footer, Header } from "../../components/client";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { getUserProfile, logout } from "../../features/account/accountThunkApi";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import {
+    authentication,
+    logout,
+} from "../../features/client/account/accountThunkApi";
+import { fetchMyCarts } from "../../features/client/carts/cartsThunkApi";
 export default function Layout() {
     const { authToken, user, isAuthenticating, isAuthenticated, isLogin } =
         useSelector((state) => state.account);
+    const { myCart } = useSelector((state) => state.carts);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     useEffect(() => {
         if (!user?.name) {
             if (authToken) {
-                dispatch(getUserProfile({ authToken }));
+                dispatch(authentication());
             }
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    useEffect(() => {
+        if (isAuthenticated || isLogin) {
+            dispatch(fetchMyCarts());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isAuthenticated, isLogin]);
+
     const handleLogout = () => {
-        dispatch(logout({ authToken }));
+        dispatch(logout());
         navigate("/", { replace: true });
     };
     return (
         <>
             <Header
+                carts={myCart}
                 isAdmin={user?.role === 0}
                 name={user?.name}
                 handleLogout={handleLogout}
@@ -33,9 +44,8 @@ export default function Layout() {
                 isAuthenticated={isAuthenticated}
                 isLogin={isLogin}
             />
-            <Outlet />
+            <Outlet context={{ isAuthenticated, isLogin }} />
             <Footer />
-            <ToastContainer />
         </>
     );
 }

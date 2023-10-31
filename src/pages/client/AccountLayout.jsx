@@ -6,8 +6,6 @@ import {
 } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { NavLink, Outlet } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 export default function AccountLayout() {
     const { user } = useSelector((state) => state.account);
     return (
@@ -63,7 +61,6 @@ export default function AccountLayout() {
                     <Outlet />
                 </div>
             </div>
-            <ToastContainer />
         </>
     );
 }

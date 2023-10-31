@@ -1,25 +1,28 @@
 import {
     IoAddSharp,
     IoCreateOutline,
+    IoSearch,
     IoTrashBinOutline,
 } from "react-icons/io5";
 import Breadcrumb from "../../components/Breadcrumb";
 import { useEffect, useRef } from "react";
-import { ModalBox, Paginate } from "../../components/admin";
+import { ModalBox } from "../../components/admin";
+import Paginate from "../../components/Paginate";
 import { useDispatch, useSelector } from "react-redux";
 import {
     clearFormInput,
+    setCurrentPage,
     setFormInput,
     setIsCreate,
     setIsDelete,
     setIsUpdate,
-} from "../../features/categories/categoriesSlice";
+} from "../../features/admin/categories/categoriesSlice";
 import {
     createCategories,
     deleteCategories,
     fetchCategories,
     updateCategories,
-} from "../../features/categories/categoriesThunkApi";
+} from "../../features/admin/categories/categoriesThunkApi";
 import { dateFormat } from "../../utils/helper";
 import { toast } from "react-toastify";
 const currentLink = {
@@ -35,69 +38,52 @@ const prevLinks = [
 ];
 export default function Categories() {
     const {
+        currentPage,
+        totalPage,
         results,
         isLoading,
         isError,
-        status,
         formInput,
         isCreate,
         isUpdate,
         isDelete,
-    } = useSelector((state) => state.categories);
+        toastLoading,
+        toastSuccess,
+        toastError,
+        loadingMessage,
+        successMessage,
+        errorMessage,
+    } = useSelector((state) => state.managerCategories);
     const dispatch = useDispatch();
     const toastId = useRef(null);
     useEffect(() => {
-        if (status === "creating") {
-            toastId.current = toast.loading("Creating");
+        if (toastLoading) {
+            toastId.current = toast.loading(loadingMessage);
         }
-        if (status === "created") {
+        if (toastSuccess) {
             toast.update(toastId.current, {
-                render: "Create success!",
+                render: successMessage,
                 type: "success",
                 isLoading: false,
                 autoClose: 2000,
             });
             handleClear();
         }
-        if (status === "deleting") {
-            toastId.current = toast.loading("Deleting");
-        }
-        if (status === "deleted") {
+        if (toastError) {
             toast.update(toastId.current, {
-                render: "Delete success!",
-                type: "success",
-                isLoading: false,
-                autoClose: 2000,
-            });
-            handleClear();
-        }
-        if (status === "failed") {
-            toast.update(toastId.current, {
-                render: "Delete Failed!",
+                render: errorMessage,
                 type: "error",
                 isLoading: false,
                 autoClose: 2000,
             });
         }
-        if (status === "updating") {
-            toastId.current = toast.loading("Updating");
-        }
-        if (status === "updated") {
-            toast.update(toastId.current, {
-                render: "Update success!",
-                type: "success",
-                isLoading: false,
-                autoClose: 2000,
-            });
-            handleClear();
-        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [status]);
+    }, [toastLoading, toastSuccess, toastError]);
 
     useEffect(() => {
-        dispatch(fetchCategories());
+        dispatch(fetchCategories({ page: currentPage }));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [currentPage]);
 
     const handleSubmit = () => {
         if (isCreate) {
@@ -122,10 +108,6 @@ export default function Categories() {
         if (isDelete) {
             dispatch(deleteCategories({ id: formInput.id }));
         }
-        console.log("isCreate", isCreate);
-        console.log("isUpdate", isUpdate);
-        console.log("isDelete", isDelete);
-        console.log(formInput);
     };
     const handleCreate = () => {
         dispatch(setIsCreate());
@@ -139,6 +121,9 @@ export default function Categories() {
     const handleClear = () => {
         dispatch(clearFormInput());
     };
+    const handlePageClick = ({ selected }) => {
+        dispatch(setCurrentPage({ currentPage: selected + 1 }));
+    };
     if (isLoading) {
         return <p>Loading ...</p>;
     }
@@ -148,7 +133,7 @@ export default function Categories() {
     return (
         <>
             <div className="p-1">
-                <div className="flex justify-between">
+                <div className="mt-2 flex justify-between gap-4">
                     <h2 className="flex items-center gap-2 text-xl">
                         Categories{" "}
                         <button
@@ -158,6 +143,29 @@ export default function Categories() {
                             <IoAddSharp />
                         </button>
                     </h2>
+                    <form
+                        className="relative flex-1"
+                        onSubmit={(e) => e.preventDefault()}
+                    >
+                        <input
+                            // value={searchParam}
+                            // onChange={(e) =>
+                            //     dispatch(
+                            //         setSearchParam({
+                            //             searchParam: e.target.value,
+                            //         }),
+                            //     )
+                            // }
+                            type="search"
+                            className="w-full rounded-sm px-3 py-1 focus:outline-none"
+                        />
+                        <button
+                            // onClick={handleSearch}
+                            className="absolute right-0 top-1/2 -translate-y-1/2 rounded-sm bg-orange-400 px-8 py-1.5 text-neutral-50 "
+                        >
+                            <IoSearch />
+                        </button>
+                    </form>
                     <Breadcrumb
                         currentLink={currentLink}
                         prevLinks={prevLinks}
@@ -236,7 +244,11 @@ export default function Categories() {
                         {/* table item end */}
                     </div>
                 </div>
-                <Paginate total={1} />
+                <Paginate
+                    handlePageClick={handlePageClick}
+                    pageCount={totalPage}
+                    currentPage={currentPage}
+                />
             </div>
             <ModalBox size="w-96" open={isCreate} closeModal={handleClear}>
                 <h3 className="mb-4 text-xl">Create category</h3>

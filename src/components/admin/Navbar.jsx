@@ -2,10 +2,10 @@ import {
     IoMenu,
     IoPersonCircleOutline,
     IoChevronDownOutline,
-    IoSearchOutline,
 } from "react-icons/io5";
 import PropTypes from "prop-types";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 Navbar.propTypes = {
     setMenu: PropTypes.func,
@@ -15,25 +15,11 @@ Navbar.propTypes = {
 export default function Navbar({ setMenu, name }) {
     const [open, setOpen] = useState(false);
     return (
-        <div className="flex items-center justify-between bg-gray-50 px-3">
+        <div className="flex items-center justify-between bg-gray-50 px-3 py-2">
             <div>
                 <IoMenu
                     onClick={() => setMenu((curr) => !curr)}
                     className="cursor-pointer text-3xl text-gray-900 hover:text-gray-600"
-                />
-            </div>
-            <div className="relative">
-                <label
-                    htmlFor="nav-search"
-                    className="absolute left-1 top-1/2 -translate-y-1/2 text-slate-500"
-                >
-                    <IoSearchOutline />
-                </label>
-                <input
-                    className="my-1 rounded bg-slate-200 px-6 py-1 focus:outline-1 focus:outline-slate-300 sm:w-[300px] lg:w-[400px]"
-                    type="search"
-                    name="search"
-                    id="nav-search"
                 />
             </div>
             <div className="relative flex cursor-pointer items-center gap-1">
@@ -58,18 +44,12 @@ export default function Navbar({ setMenu, name }) {
                             : "visible top-full scale-100 opacity-100"
                     }`}
                 >
-                    <a
-                        href="#!"
+                    <Link
+                        to="/account/profile"
                         className="m-1 block whitespace-nowrap rounded-sm p-1 text-sm text-slate-600 transition-colors hover:bg-slate-400 hover:text-slate-600"
                     >
                         Your Profile
-                    </a>
-                    <a
-                        href="#!"
-                        className="m-1 block whitespace-nowrap rounded-sm p-1 text-sm text-slate-600 transition-colors hover:bg-slate-400 hover:text-slate-600"
-                    >
-                        Sign Out
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>

@@ -4,21 +4,41 @@ import {
     discountCalculator,
     maxPriceCalculator,
     minPriceCalculator,
+    stockCalculator,
 } from "../../utils/helper";
 import { Link } from "react-router-dom";
-export default function ListProduct({ productResults }) {
+import Paginate from "../Paginate";
+export default function ListProduct({
+    productResults,
+    handleSort,
+    sort,
+    handlePageClick,
+    pageCount,
+    currentPage,
+}) {
     return (
         <>
             <div className="flex justify-between rounded-sm bg-neutral-200 p-3">
                 <div className="flex items-center gap-4 text-sm">
                     <span className="text-neutral-500">Sort by</span>
-                    <button className="rounded-sm bg-orange-500 px-3 py-1 text-neutral-50">
-                        Popular
-                    </button>
-                    <button className="rounded-sm bg-neutral-50 px-3 py-1 text-neutral-500">
+                    <button
+                        onClick={() => handleSort("updated_at.desc")}
+                        className={`rounded-sm px-3 py-1  ${
+                            sort == "updated_at.desc"
+                                ? "bg-orange-500 text-neutral-50"
+                                : "bg-neutral-50 text-neutral-500"
+                        }`}
+                    >
                         Latest
                     </button>
-                    <button className="rounded-sm bg-neutral-50 px-3 py-1 text-neutral-500">
+                    <button
+                        onClick={() => handleSort("discount.desc")}
+                        className={`rounded-sm px-3 py-1  ${
+                            sort == "discount.desc"
+                                ? "bg-orange-500 text-neutral-50"
+                                : "bg-neutral-50 text-neutral-500"
+                        }`}
+                    >
                         Top Sales
                     </button>
                     <select className="rounded-sm px-3 py-1 focus:outline-none">
@@ -51,26 +71,46 @@ export default function ListProduct({ productResults }) {
                     </div>
                 </div>
             </div>
-            <div className="mt-2 grid grid-cols-5 gap-4 p-2">
+            <div className="mt-2 grid grid-cols-2 gap-4 p-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5">
                 {productResults.map((product) => {
                     return (
                         <Link
                             to={`/product/${product.id}`}
-                            className="cursor-pointer rounded-sm bg-neutral-50 shadow-sm transition-transform hover:-translate-y-0.5 hover:shadow"
+                            className=" cursor-pointer rounded-sm bg-neutral-50 shadow-sm transition-transform hover:-translate-y-0.5 hover:shadow"
                             key={product.id}
                         >
-                            <div className="p-4">
+                            <div className="relative h-56 p-4">
+                                {product.discount ? (
+                                    <span className="absolute right-0 top-0 rounded-bl-lg bg-yellow-300 px-2 py-1 text-sm text-red-500">
+                                        -{product.discount}%
+                                    </span>
+                                ) : (
+                                    ""
+                                )}
                                 <img
-                                    className="h-full w-full object-cover"
-                                    src={product.image}
+                                    className="h-full w-full object-contain"
+                                    src={
+                                        import.meta.env.VITE_IMAGE_LINK +
+                                        product.image
+                                    }
                                     alt=""
                                 />
                             </div>
-                            <div className="p-2">
-                                <p className="line-clamp-2 text-sm">
+                            <div className="flex h-32 flex-col justify-between p-2">
+                                <p className="line-clamp-2 flex-1 text-sm">
                                     {product.name}
                                 </p>
-                                <span className="my-2 block text-orange-500">
+                                <span className="my-2 flex flex-col text-orange-500">
+                                    <span className="text-xs text-neutral-500 line-through">
+                                        $
+                                        {minPriceCalculator(
+                                            product.classify,
+                                        ).toFixed(1)}
+                                        {" - "}$
+                                        {maxPriceCalculator(
+                                            product.classify,
+                                        ).toFixed(1)}
+                                    </span>
                                     $
                                     {discountCalculator(
                                         minPriceCalculator(product.classify),
@@ -82,7 +122,7 @@ export default function ListProduct({ productResults }) {
                                         product.discount,
                                     ).toFixed(1)}
                                 </span>
-                                <div className="flex items-center gap-1 text-yellow-500">
+                                <div className="flex items-center justify-between gap-1 text-yellow-500">
                                     <span className="flex">
                                         <IoStar />
                                         <IoStar />
@@ -91,7 +131,7 @@ export default function ListProduct({ productResults }) {
                                         <IoStar />
                                     </span>
                                     <span className="text-sm text-neutral-600">
-                                        512 sold
+                                        {stockCalculator(product.classify)} sold
                                     </span>
                                 </div>
                             </div>
@@ -100,61 +140,11 @@ export default function ListProduct({ productResults }) {
                 })}
             </div>
             <nav className="mt-3 flex justify-center" aria-label="Pagination">
-                <a
-                    href="#"
-                    className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                    <span className="sr-only">Previous</span>
-                    <IoChevronBack className="h-5 w-5" aria-hidden="true" />
-                </a>
-                {/* Current: "z-10 bg-orange-500 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500", Default: "text-gray-900  ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
-                <a
-                    href="#"
-                    aria-current="page"
-                    className="relative z-10 inline-flex items-center bg-orange-500 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
-                >
-                    1
-                </a>
-                <a
-                    href="#"
-                    className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900  ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                    2
-                </a>
-                <a
-                    href="#"
-                    className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900  ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-                >
-                    3
-                </a>
-                <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700  ring-gray-300 focus:outline-offset-0">
-                    ...
-                </span>
-                <a
-                    href="#"
-                    className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900  ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-                >
-                    8
-                </a>
-                <a
-                    href="#"
-                    className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900  ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                    9
-                </a>
-                <a
-                    href="#"
-                    className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900  ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                    10
-                </a>
-                <a
-                    href="#"
-                    className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400  ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                    <span className="sr-only">Next</span>
-                    <IoChevronForward className="h-5 w-5" aria-hidden="true" />
-                </a>
+                <Paginate
+                    currentPage={currentPage}
+                    pageCount={pageCount}
+                    handlePageClick={handlePageClick}
+                />
             </nav>
         </>
     );
@@ -162,4 +152,9 @@ export default function ListProduct({ productResults }) {
 
 ListProduct.propTypes = {
     productResults: PropTypes.array,
+    handleSort: PropTypes.func,
+    sort: PropTypes.string,
+    handlePageClick: PropTypes.func,
+    pageCount: PropTypes.number,
+    currentPage: PropTypes.number,
 };

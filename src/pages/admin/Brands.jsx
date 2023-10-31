@@ -1,28 +1,30 @@
 import {
     IoAddSharp,
     IoCreateOutline,
+    IoSearch,
     IoTrashBinOutline,
 } from "react-icons/io5";
 import Breadcrumb from "../../components/Breadcrumb";
 import { useEffect, useRef } from "react";
-import { ModalBox, Paginate, SelectImage } from "../../components/admin";
+import { ModalBox } from "../../components/admin";
+import Paginate from "../../components/Paginate";
 import { useDispatch, useSelector } from "react-redux";
 
 import { dateFormat } from "../../utils/helper";
 import {
     clearFormInput,
-    removeImage,
+    setCurrentPage,
     setFormInput,
     setIsCreate,
     setIsDelete,
     setIsUpdate,
-} from "../../features/brands/brandsSlice";
+} from "../../features/admin/brands/brandsSlice";
 import {
     updateBrands,
     fetchBrands,
     deleteBrands,
     createBrands,
-} from "../../features/brands/brandsThunkApi";
+} from "../../features/admin/brands/brandsThunkApi";
 import { toast } from "react-toastify";
 const currentLink = {
     name: "brands",
@@ -38,93 +40,65 @@ const prevLinks = [
 
 export default function Brands() {
     const {
+        currentPage,
+        totalPage,
         results,
         isLoading,
         isError,
-        status,
         formInput,
         isCreate,
         isUpdate,
         isDelete,
-    } = useSelector((state) => state.brands);
+        toastLoading,
+        toastSuccess,
+        toastError,
+        loadingMessage,
+        successMessage,
+        errorMessage,
+    } = useSelector((state) => state.managerBrands);
     const dispatch = useDispatch();
-    const imageRef = useRef();
     const toastId = useRef(null);
     useEffect(() => {
-        if (status === "creating") {
-            toastId.current = toast.loading("Creating");
+        if (toastLoading) {
+            toastId.current = toast.loading(loadingMessage);
         }
-        if (status === "created") {
+        if (toastSuccess) {
             toast.update(toastId.current, {
-                render: "Create success!",
+                render: successMessage,
                 type: "success",
                 isLoading: false,
                 autoClose: 2000,
             });
             handleClear();
         }
-        if (status === "deleting") {
-            toastId.current = toast.loading("Deleting");
-        }
-        if (status === "deleted") {
+        if (toastError) {
             toast.update(toastId.current, {
-                render: "Delete success!",
-                type: "success",
-                isLoading: false,
-                autoClose: 2000,
-            });
-            handleClear();
-        }
-        if (status === "failed") {
-            toast.update(toastId.current, {
-                render: "Delete Failed!",
+                render: errorMessage,
                 type: "error",
                 isLoading: false,
                 autoClose: 2000,
             });
         }
-        if (status === "updating") {
-            toastId.current = toast.loading("Updating");
-        }
-        if (status === "updated") {
-            toast.update(toastId.current, {
-                render: "Update success!",
-                type: "success",
-                isLoading: false,
-                autoClose: 2000,
-            });
-            handleClear();
-        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [status]);
+    }, [toastLoading, toastSuccess, toastError]);
 
     useEffect(() => {
-        dispatch(fetchBrands());
+        dispatch(fetchBrands({ page: currentPage }));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [currentPage]);
 
     const handleSubmit = () => {
         if (isCreate) {
-            if (formInput.name && imageRef.current) {
-                const formData = new FormData();
-                formData.append("name", formInput.name);
-                formData.append("image", imageRef.current);
-                dispatch(createBrands({ body: formData }));
+            if (formInput.name) {
+                dispatch(createBrands({ body: { name: formInput.name } }));
             }
         }
         if (isUpdate) {
-            if (formInput.name || imageRef.current) {
-                const formData = new FormData();
-                if (formInput.name) {
-                    formData.append("name", formInput.name);
-                }
-                if (imageRef.current) {
-                    formData.append("image", imageRef.current);
-                }
+            if (formInput.name) {
                 dispatch(
                     updateBrands({
                         id: formInput.id,
-                        body: formData,
+                        body: { name: formInput.name },
                     }),
                 );
             }
@@ -132,10 +106,6 @@ export default function Brands() {
         if (isDelete) {
             dispatch(deleteBrands({ id: formInput.id }));
         }
-        console.log("isCreate", isCreate);
-        console.log("isUpdate", isUpdate);
-        console.log("isDelete", isDelete);
-        console.log(formInput);
     };
     const handleCreate = () => {
         dispatch(setIsCreate());
@@ -148,11 +118,10 @@ export default function Brands() {
     };
     const handleClear = () => {
         dispatch(clearFormInput());
-        imageRef.current = "";
     };
-    const handleRemoveImage = () => {
-        dispatch(removeImage());
-        imageRef.current = "";
+
+    const handlePageClick = ({ selected }) => {
+        dispatch(setCurrentPage({ currentPage: selected + 1 }));
     };
     if (isLoading) {
         return <p>Loading ...</p>;
@@ -163,7 +132,7 @@ export default function Brands() {
     return (
         <>
             <div className="p-1">
-                <div className="flex justify-between">
+                <div className="mt-2 flex justify-between gap-4">
                     <h2 className="flex items-center gap-2 text-xl">
                         Brands{" "}
                         <button
@@ -173,6 +142,29 @@ export default function Brands() {
                             <IoAddSharp />
                         </button>
                     </h2>
+                    <form
+                        className="relative flex-1"
+                        onSubmit={(e) => e.preventDefault()}
+                    >
+                        <input
+                            // value={searchParam}
+                            // onChange={(e) =>
+                            //     dispatch(
+                            //         setSearchParam({
+                            //             searchParam: e.target.value,
+                            //         }),
+                            //     )
+                            // }
+                            type="search"
+                            className="w-full rounded-sm px-3 py-1 focus:outline-none"
+                        />
+                        <button
+                            // onClick={handleSearch}
+                            className="absolute right-0 top-1/2 -translate-y-1/2 rounded-sm bg-orange-400 px-8 py-1.5 text-neutral-50 "
+                        >
+                            <IoSearch />
+                        </button>
+                    </form>
                     <Breadcrumb
                         currentLink={currentLink}
                         prevLinks={prevLinks}
@@ -185,14 +177,13 @@ export default function Brands() {
                             <div className="mx-1 basis-1/12">ID</div>
                             <div className="mx-1 flex-1">Name</div>
                             <div className="mx-1 basis-2/12">Updated at</div>
-                            <div className="mx-1 basis-1/12">Image</div>
                             <div className="mx-1 basis-3/12 text-center">
                                 Action
                             </div>
                         </div>
                         {/* table item start */}
                         {results.map((brand, index) => {
-                            const { id, name, image, updated_at } = brand;
+                            const { id, name, updated_at } = brand;
                             return (
                                 <div
                                     key={id}
@@ -222,13 +213,6 @@ export default function Brands() {
                                         </span>
                                         {dateFormat(new Date(updated_at))}
                                     </div>
-                                    <div className="order-1 mx-1 basis-1/12 md:order-none">
-                                        <img
-                                            className="max-w-xs rounded md:w-16 md:object-cover"
-                                            src={image}
-                                            alt=""
-                                        />
-                                    </div>
                                     <div className="mx-1 basis-3/12 text-center">
                                         <span className="font-semibold md:hidden">
                                             Action :{" "}
@@ -255,42 +239,28 @@ export default function Brands() {
                         {/* table item end */}
                     </div>
                 </div>
-                <Paginate total={1} />
+                <Paginate
+                    handlePageClick={handlePageClick}
+                    pageCount={totalPage}
+                    currentPage={currentPage}
+                />
             </div>
-            <ModalBox open={isCreate} closeModal={handleClear}>
-                <div className="flex gap-4">
-                    <SelectImage
-                        name="image"
-                        imagePreviews={formInput.imagePreview}
-                        setImagePreviews={(image) =>
-                            dispatch(
-                                setFormInput({
-                                    value: image,
-                                    name: "imagePreview",
-                                }),
-                            )
-                        }
-                        setImageSelected={(image) => {
-                            imageRef.current = image;
-                        }}
-                        removeImage={handleRemoveImage}
-                        className="h-24 w-24 text-xs"
-                    />
-                    <input
-                        value={formInput.name}
-                        onChange={(e) =>
-                            dispatch(
-                                setFormInput({
-                                    value: e.target.value,
-                                    name: "name",
-                                }),
-                            )
-                        }
-                        className="w-full self-center px-2 py-1"
-                        type="text"
-                        placeholder="Brand Name"
-                    />
-                </div>
+            <ModalBox size="w-96" open={isCreate} closeModal={handleClear}>
+                <h3 className="mb-4 text-xl">Create brand</h3>
+                <input
+                    value={formInput.name}
+                    onChange={(e) =>
+                        dispatch(
+                            setFormInput({
+                                value: e.target.value,
+                                name: "name",
+                            }),
+                        )
+                    }
+                    className="w-full self-center px-2 py-1"
+                    type="text"
+                    placeholder="Brand Name"
+                />
                 <div className="mt-4 flex justify-around">
                     <button
                         onClick={handleClear}
@@ -306,13 +276,10 @@ export default function Brands() {
                     </button>
                 </div>
             </ModalBox>
-            <ModalBox open={isDelete} closeModal={handleClear}>
+
+            <ModalBox size="w-96" open={isDelete} closeModal={handleClear}>
+                <h3 className="mb-4 text-xl">Delete brand</h3>
                 <div className="flex gap-4">
-                    <img
-                        className="h-24 w-24 object-contain"
-                        src={formInput.imagePreview}
-                        alt=""
-                    />
                     <div className="self-center p-4">
                         Are you sure delete brand ?{" "}
                         <span className="text-red-500">{formInput.name}</span>
@@ -333,25 +300,9 @@ export default function Brands() {
                     </button>
                 </div>
             </ModalBox>
-            <ModalBox open={isUpdate} closeModal={handleClear}>
+            <ModalBox size="w-96" open={isUpdate} closeModal={handleClear}>
+                <h3 className="mb-4 text-xl">Update brand</h3>
                 <div className="flex gap-4">
-                    <SelectImage
-                        name="image"
-                        imagePreviews={formInput.imagePreview}
-                        setImagePreviews={(image) =>
-                            dispatch(
-                                setFormInput({
-                                    value: image,
-                                    name: "imagePreview",
-                                }),
-                            )
-                        }
-                        setImageSelected={(image) => {
-                            imageRef.current = image;
-                        }}
-                        removeImage={handleRemoveImage}
-                        className="h-24 w-24 text-xs"
-                    />
                     <input
                         value={formInput.name}
                         onChange={(e) =>

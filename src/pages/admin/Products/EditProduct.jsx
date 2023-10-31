@@ -14,13 +14,12 @@ import {
     setImagePreview,
     setNewClassify,
     setThumbPreview,
-} from "../../../features/products/productsSlice";
+} from "../../../features/admin/products/productsSlice";
 import {
+    fetchCategoriesAndBrands,
     fetchSingleProduct,
     updateProducts,
-} from "../../../features/products/productsThunkApi";
-import { fetchCategories } from "../../../features/categories/categoriesThunkApi";
-import { fetchBrands } from "../../../features/brands/brandsThunkApi";
+} from "../../../features/admin/products/productsThunkApi";
 import { toast } from "react-toastify";
 
 export default function EditProduct() {
@@ -28,35 +27,47 @@ export default function EditProduct() {
     const {
         edit: product,
         isLoading,
-        status,
-    } = useSelector((state) => state.products);
-    const { results: categories } = useSelector((state) => state.categories);
-    const { results: brands } = useSelector((state) => state.brands);
+        toastLoading,
+        toastSuccess,
+        toastError,
+        loadingMessage,
+        successMessage,
+        errorMessage,
+        categories,
+        brands,
+    } = useSelector((state) => state.managerProducts);
+
     const dispatch = useDispatch();
     const imageRef = useRef({});
     const thumbRef = useRef([]);
-    const toastId = useRef(null);
     useEffect(() => {
-        dispatch(fetchSingleProduct({ id }));
-        dispatch(fetchCategories());
-        dispatch(fetchBrands());
+        dispatch(fetchSingleProduct(id));
+        dispatch(fetchCategoriesAndBrands());
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
+    const toastId = useRef(null);
     useEffect(() => {
-        if (status === "updating") {
-            toastId.current = toast.loading("Updating");
+        if (toastLoading) {
+            toastId.current = toast.loading(loadingMessage);
         }
-        if (status === "updated") {
+        if (toastSuccess) {
             toast.update(toastId.current, {
-                render: "Update success!",
+                render: successMessage,
                 type: "success",
                 isLoading: false,
                 autoClose: 2000,
             });
         }
-
+        if (toastError) {
+            toast.update(toastId.current, {
+                render: errorMessage,
+                type: "error",
+                isLoading: false,
+                autoClose: 2000,
+            });
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [status]);
+    }, [toastLoading, toastSuccess, toastError]);
     useEffect(() => {
         if (product?.image) {
             imageRef.current = product.image;

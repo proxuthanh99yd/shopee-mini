@@ -19,7 +19,9 @@ import {
     CreateProduct,
     Dashboard,
     EditProduct,
+    Orders,
     Products,
+    Users,
 } from "../pages/admin";
 
 export const router = createBrowserRouter([
@@ -102,6 +104,14 @@ export const router = createBrowserRouter([
             {
                 path: "products/brands",
                 element: <Brands />,
+            },
+            {
+                path: "users",
+                element: <Users />,
+            },
+            {
+                path: "orders",
+                element: <Orders />,
             },
         ],
     },

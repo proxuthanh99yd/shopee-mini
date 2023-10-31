@@ -7,8 +7,17 @@ import "swiper/css";
 import "swiper/css/navigation";
 // import required modules
 import { Navigation } from "swiper/modules";
+import PropTypes from "prop-types";
+import {
+    discountCalculator,
+    maxPriceCalculator,
+    minPriceCalculator,
+    stockCalculator,
+} from "../../utils/helper";
+import { Link } from "react-router-dom";
+import { IoStar } from "react-icons/io5";
 
-export default function SameProductSlider() {
+export default function SameProductSlider({ sameProducts }) {
     return (
         <>
             <Swiper
@@ -17,38 +26,82 @@ export default function SameProductSlider() {
                     "--swiper-navigation-color": "#fff",
                     "--swiper-pagination-color": "#fff",
                 }}
-                slidesPerView={6}
+                slidesPerView={5}
                 spaceBetween={10}
                 navigation={true}
                 modules={[Navigation]}
             >
-                {Array.from({ length: 10 }, (_, i) => {
+                {sameProducts.map((product) => {
                     return (
-                        <SwiperSlide key={i}>
-                            <div className="cursor-pointer rounded-sm bg-neutral-50">
-                                <div>
+                        <SwiperSlide key={product.id}>
+                            <Link
+                                to={`/product/${product.id}`}
+                                className="w-full cursor-pointer rounded-sm bg-neutral-50 shadow-sm"
+                                key={product.id}
+                            >
+                                <div className="relative h-56 w-auto p-4">
+                                    {product.discount ? (
+                                        <span className="absolute right-0 top-0 rounded-bl-lg bg-yellow-300 px-2 py-1 text-sm text-red-500">
+                                            -{product.discount}%
+                                        </span>
+                                    ) : (
+                                        ""
+                                    )}
                                     <img
-                                        className="h-full w-full object-cover"
-                                        src="../public/images/product.jpg"
+                                        style={{ objectFit: "contain" }}
+                                        className="h-full w-auto"
+                                        src={
+                                            import.meta.env.VITE_IMAGE_LINK +
+                                            product.image
+                                        }
                                         alt=""
                                     />
                                 </div>
-                                <div className="flex flex-col justify-between gap-3 p-2">
-                                    <p className="line-clamp-2 text-left text-sm">
-                                        Bộ giấy vệ sinh dây sạc nhanh PD20W
-                                        Bu27,cáp sạc bọc dù chống đứt, xạc nhanh
-                                        truyền dữ liệu
+                                <div className="flex h-32 flex-col justify-between p-2">
+                                    <p className="line-clamp-2 flex-1 text-sm hover:text-orange-500">
+                                        {product.name}
                                     </p>
-                                    <div className="flex items-center justify-between">
-                                        <span className=" text-orange-500">
-                                            $80000
+                                    <span className="my-2 flex flex-col text-base text-orange-500">
+                                        <span className="text-xs text-neutral-500 line-through">
+                                            $
+                                            {minPriceCalculator(
+                                                product.classify,
+                                            ).toFixed(1)}
+                                            {" - "}$
+                                            {maxPriceCalculator(
+                                                product.classify,
+                                            ).toFixed(1)}
+                                        </span>
+                                        $
+                                        {discountCalculator(
+                                            minPriceCalculator(
+                                                product.classify,
+                                            ),
+                                            product.discount,
+                                        ).toFixed(1)}
+                                        {" - "}$
+                                        {discountCalculator(
+                                            maxPriceCalculator(
+                                                product.classify,
+                                            ),
+                                            product.discount,
+                                        ).toFixed(1)}
+                                    </span>
+                                    <div className="flex items-center justify-between gap-1 text-yellow-500">
+                                        <span className="flex">
+                                            <IoStar />
+                                            <IoStar />
+                                            <IoStar />
+                                            <IoStar />
+                                            <IoStar />
                                         </span>
                                         <span className="text-sm text-neutral-600">
-                                            512 sold
+                                            {stockCalculator(product.classify)}{" "}
+                                            sold
                                         </span>
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         </SwiperSlide>
                     );
                 })}
@@ -56,3 +109,7 @@ export default function SameProductSlider() {
         </>
     );
 }
+
+SameProductSlider.propTypes = {
+    sameProducts: PropTypes.array,
+};

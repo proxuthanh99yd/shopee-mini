@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { accountInitState as initialState } from "./accountInitState"
-import { changePassword, getUserProfile, login, logout, signup, updateUserProfile } from "./accountThunkApi";
+import { authentication, changePassword, login, logout, signup, updateUserProfile } from "./accountThunkApi";
 
 const accountSlice = createSlice({
     name: "account",
@@ -60,19 +60,19 @@ const accountSlice = createSlice({
                 state.isError = true
                 state.errorMessage = payload
             })
-            .addCase(getUserProfile.pending, (state) => {
+            .addCase(authentication.pending, (state) => {
                 state.isAuthenticating = true
                 state.isAuthenticated = false
                 state.isLogin = false
                 state.isError = false
             })
-            .addCase(getUserProfile.fulfilled, (state, { payload }) => {
+            .addCase(authentication.fulfilled, (state, { payload }) => {
                 state.isAuthenticating = false
                 state.isAuthenticated = true
                 state.isLogin = true
                 state.user = payload
             })
-            .addCase(getUserProfile.rejected, (state, { payload }) => {
+            .addCase(authentication.rejected, (state, { payload }) => {
                 localStorage.removeItem('auth-token')
                 return { ...state, ...initialState, isError: true, errorMessage: payload, authToken: "" }
             })

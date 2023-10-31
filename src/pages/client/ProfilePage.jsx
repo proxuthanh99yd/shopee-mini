@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { updateUserProfile } from "../../features/account/accountThunkApi";
+import { updateUserProfile } from "../../features/client/account/accountThunkApi";
 import { useEffect } from "react";
 import { useRef } from "react";
 import { toast } from "react-toastify";

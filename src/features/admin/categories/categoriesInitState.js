@@ -3,7 +3,7 @@ export const categoriesInitState = {
     isLoading: true,
     results: [],
     currentPage: 1,
-    totalPage: 0,
+    totalPage: 1,
     status: "",
     formInput: {
         id: "",
@@ -11,5 +11,11 @@ export const categoriesInitState = {
     },
     isCreate: false,
     isUpdate: false,
-    isDelete: false
+    isDelete: false,
+    loadingMessage: "",
+    successMessage: "",
+    errorMessage: "",
+    toastLoading: false,
+    toastSuccess: false,
+    toastError: false,
 }

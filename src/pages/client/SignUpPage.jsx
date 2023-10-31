@@ -1,11 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Footer } from "../../components/client";
 import { useDispatch, useSelector } from "react-redux";
-import { setInput } from "../../features/account/accountSlice";
-import { signup } from "../../features/account/accountThunkApi";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { setInput } from "../../features/client/account/accountSlice";
+import { signup } from "../../features/client/account/accountThunkApi";
 import { useEffect, useRef } from "react";
+import { toast } from "react-toastify";
 export default function SignUpPage() {
     const {
         formInput,
@@ -79,9 +78,9 @@ export default function SignUpPage() {
         <div>
             <header className="container mx-auto flex items-center justify-between p-8 text-orange-500 xl:max-w-7xl">
                 <div className="flex items-center">
-                    <p className="font-nunito text-3xl font-bold ">
+                    <Link to="/" className="font-nunito text-3xl font-bold ">
                         Shopee Mini
-                    </p>
+                    </Link>
                     <span className="ml-4 text-xl font-semibold text-neutral-950">
                         Sign Up
                     </span>
@@ -180,7 +179,6 @@ export default function SignUpPage() {
                 </div>
             </div>
             <Footer />
-            <ToastContainer />
         </div>
     );
 }

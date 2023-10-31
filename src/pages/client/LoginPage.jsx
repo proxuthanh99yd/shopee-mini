@@ -1,12 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Footer } from "../../components/client";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserProfile, login } from "../../features/account/accountThunkApi";
-import { setInput } from "../../features/account/accountSlice";
+import {
+    authentication,
+    login,
+} from "../../features/client/account/accountThunkApi";
+import { setInput } from "../../features/client/account/accountSlice";
 import { useEffect } from "react";
 import { useRef } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 export default function LoginPage() {
     const navigate = useNavigate();
     const {
@@ -23,7 +25,7 @@ export default function LoginPage() {
     const toastId = useRef(null);
     useEffect(() => {
         if (authToken) {
-            dispatch(getUserProfile({ authToken }));
+            dispatch(authentication({ authToken }));
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -114,9 +116,9 @@ export default function LoginPage() {
         <div>
             <header className="container mx-auto flex items-center justify-between p-8 text-orange-500 xl:max-w-7xl">
                 <div className="flex items-center">
-                    <p className="font-nunito text-3xl font-bold ">
+                    <Link to="/" className="font-nunito text-3xl font-bold ">
                         Shopee Mini
-                    </p>
+                    </Link>
                     <span className="ml-4 text-xl font-semibold text-neutral-950">
                         Login
                     </span>
@@ -185,7 +187,6 @@ export default function LoginPage() {
                 </div>
             </div>
             <Footer />
-            <ToastContainer />
         </div>
     );
 }

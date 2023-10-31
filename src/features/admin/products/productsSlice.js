@@ -1,11 +1,52 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { productsInitState as initialState } from "./productsInitState";
-import { createProducts, deleteProducts, fetchProducts, fetchSingleProduct, updateProducts } from "./productsThunkApi";
+import { changeStatusProducts, createProducts, deleteProducts, fetchCategoriesAndBrands, fetchProducts, fetchSingleProduct, updateProducts } from "./productsThunkApi";
 
 const productsSlice = createSlice({
     name: "Products",
     initialState,
     reducers: {
+        addToCarts: (state) => {
+            const index = state.myCart.findIndex((item) => {
+                return item.productId == state.addToCartForm.productId && item.classifyId == state.addToCartForm.classifyId
+            })
+            if (index == -1) {
+                state.myCart.push(state.addToCartForm)
+            } else {
+                state.myCart[index].quantity = state.myCart[index].quantity + state.addToCartForm.quantity
+            }
+        },
+        incrementProduct: (state) => {
+            if (state.selected.stock > 0) {
+                state.selected.stock--;
+                state.addToCartForm.quantity++;
+            }
+        },
+        decrementProduct: (state) => {
+            if (state.addToCartForm.quantity > 0) {
+                state.selected.stock++;
+                state.addToCartForm.quantity--;
+            }
+        },
+        setQuantity: (state, { payload }) => {
+            const sum = Number(state.selected.stock) + Number(state.addToCartForm.quantity);
+
+            if (payload.quantity >= sum) {
+                state.addToCartForm.quantity = sum;
+                state.selected.stock = 0;
+            } else {
+                state.addToCartForm.quantity = payload.quantity;
+                state.selected.stock = sum - payload.quantity;
+            }
+        },
+        setSelected: (state, { payload }) => {
+            state.selected.classifyId = payload.classifyId;
+            state.selected.productId = payload.productId;
+            state.selected.stock = payload.stock;
+            state.addToCartForm.classifyId = payload.classifyId;
+            state.addToCartForm.productId = payload.productId;
+            state.addToCartForm.quantity = 0;
+        },
         handleInput: (state, { payload }) => {
             if (payload.name === 'classification') {
                 state[payload.type][payload.name] = {
@@ -84,7 +125,7 @@ const productsSlice = createSlice({
             }
         },
         setFilter: (state, { payload }) => {
-            state.filter = payload.param
+            state.filter = payload
             state.currentPage = 1
         },
         setCurrentPage: (state, { payload }) => {
@@ -102,12 +143,12 @@ const productsSlice = createSlice({
             })
             .addCase(fetchProducts.fulfilled, (state, { payload }) => {
                 state.isLoading = false;
-                state.results = payload.results.data.reduce((prev, curr) => {
+                state.results = payload.data.reduce((prev, curr) => {
                     return [...prev, { ...curr, image: import.meta.env.VITE_IMAGE_LINK + curr.image }]
                 }, [])
-                state.currentPage = payload.results.current_page;
-                state.totalPage = payload.results.last_page;
-                state.links = payload.results.links;
+                state.currentPage = payload.current_page;
+                state.totalPage = payload.last_page;
+                state.links = payload.links;
 
             })
             .addCase(fetchProducts.rejected, (state) => {
@@ -120,21 +161,21 @@ const productsSlice = createSlice({
             .addCase(fetchSingleProduct.fulfilled, (state, { payload }) => {
                 state.isLoading = false;
 
-                state.edit.id = payload.results.id;
-                state.edit.name = payload.results.name;
-                state.edit.description = payload.results.description;
-                state.edit.image = import.meta.env.VITE_IMAGE_LINK + payload.results.image
-                state.edit.imagePreview = [import.meta.env.VITE_IMAGE_LINK + payload.results.image];
-                state.edit.active = payload.results.active;
-                state.edit.discount = payload.results.discount;
-                state.edit.category_id = payload.results.category_id;
-                state.edit.brand_id = payload.results.brand_id;
-                state.edit.thumbnails = payload.results.thumbnails
-                state.edit.thumbPreviews = payload.results.thumbnails.reduce((prev, curr) => {
+                state.edit.id = payload.id;
+                state.edit.name = payload.name;
+                state.edit.description = payload.description;
+                state.edit.image = import.meta.env.VITE_IMAGE_LINK + payload.image
+                state.edit.imagePreview = [import.meta.env.VITE_IMAGE_LINK + payload.image];
+                state.edit.active = payload.active;
+                state.edit.discount = payload.discount;
+                state.edit.category_id = payload.category_id;
+                state.edit.brand_id = payload.brand_id;
+                state.edit.thumbnails = payload.thumbnails
+                state.edit.thumbPreviews = payload.thumbnails.reduce((prev, curr) => {
                     return [...prev, import.meta.env.VITE_IMAGE_LINK + curr.name]
                 }, []);
-                state.edit.classification = payload.results.classification[0];
-                state.edit.classify = payload.results.classify;
+                state.edit.classification = payload.classification[0];
+                state.edit.classify = payload.classify;
             })
             .addCase(fetchSingleProduct.rejected, (state) => {
                 state.isLoading = false;
@@ -162,20 +203,68 @@ const productsSlice = createSlice({
                 state.deleted = false;
             })
             .addCase(updateProducts.pending, (state) => {
-                state.status = "updating";
+                state.toastLoading = true;
+                state.toastSuccess = false;
+                state.toastError = false;
+                state.loadingMessage = "updating";
+                state.successMessage = "";
+                state.errorMessage = "";
             })
             .addCase(updateProducts.fulfilled, (state, { payload }) => {
-                state.isLoading = false;
+                state.toastLoading = false;
+                state.toastSuccess = true;
+                state.toastError = false;
+                state.loadingMessage = "";
+                state.successMessage = "update success!";
+                state.errorMessage = "";
                 state.results = state.results.map(result => {
-                    if (result.id === payload.results.id) {
-                        return { ...result, ...payload.results }
+                    if (result.id === payload.id) {
+                        return { ...result, ...payload }
                     }
                     return result
                 })
-                state.status = "updated";
             })
-            .addCase(updateProducts.rejected, (state) => {
-                state.status = "failed";
+            .addCase(updateProducts.rejected, (state, { payload }) => {
+                state.toastLoading = false;
+                state.toastSuccess = false;
+                state.toastError = true;
+                state.loadingMessage = "";
+                state.successMessage = "";
+                state.errorMessage = `${payload.status} - ${payload.data.message}`
+            })
+            .addCase(changeStatusProducts.pending, (state) => {
+                state.toastLoading = true;
+                state.toastSuccess = false;
+                state.toastError = false;
+                state.loadingMessage = "change status";
+                state.successMessage = "";
+                state.errorMessage = "";
+            })
+            .addCase(changeStatusProducts.fulfilled, (state, { payload }) => {
+                state.toastLoading = false;
+                state.toastSuccess = true;
+                state.toastError = false;
+                state.loadingMessage = "";
+                state.successMessage = "change status success !";
+                state.errorMessage = "";
+                state.results = state.results.map(result => {
+                    if (result.id === payload.id) {
+                        return { ...result, active: payload.active }
+                    }
+                    return result
+                })
+            })
+            .addCase(changeStatusProducts.rejected, (state, { payload }) => {
+                state.toastLoading = false;
+                state.toastSuccess = false;
+                state.toastError = true;
+                state.loadingMessage = "";
+                state.successMessage = "";
+                state.errorMessage = `${payload.status} - ${payload.data.message}`
+            })
+            .addCase(fetchCategoriesAndBrands.fulfilled, (state, { payload }) => {
+                state.categories = payload.categories;
+                state.brands = payload.brands;
             })
     }
 })
@@ -191,6 +280,11 @@ export const {
     clearForm,
     setFilter,
     setCurrentPage,
-    setSearchParam
+    setSearchParam,
+    setSelected,
+    setQuantity,
+    incrementProduct,
+    decrementProduct,
+    addToCarts
 } = productsSlice.actions
 export default productsSlice.reducer

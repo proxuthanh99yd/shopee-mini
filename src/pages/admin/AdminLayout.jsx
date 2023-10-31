@@ -1,10 +1,8 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { Navbar, Sidebar } from "../../components/admin";
 import { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserProfile } from "../../features/account/accountThunkApi";
+import { authentication } from "../../features/client/account/accountThunkApi";
 export default function AdminLayout() {
     const { authToken, user, isAuthenticated, isAuthenticating } = useSelector(
         (state) => state.account,
@@ -13,7 +11,7 @@ export default function AdminLayout() {
     const navigate = useNavigate();
     useEffect(() => {
         if (authToken && !isAuthenticated) {
-            dispatch(getUserProfile({ authToken }));
+            dispatch(authentication({ authToken }));
         }
         if (
             (!authToken && !isAuthenticated) ||
@@ -81,7 +79,6 @@ export default function AdminLayout() {
                     <Navbar name={user.name} setMenu={setMenu} />
                     <Outlet />
                 </div>
-                <ToastContainer />
             </div>
         );
     }

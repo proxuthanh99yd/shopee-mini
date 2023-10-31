@@ -5,7 +5,14 @@ import {
     IoStarOutline,
 } from "react-icons/io5";
 import PropTypes from "prop-types";
-export default function Sidebar({ brandResults, categoryResults }) {
+export default function Sidebar({
+    brandResults,
+    categoryResults,
+    handleSetFilter,
+    brandFilter,
+    categoryFilter,
+    handleClearFilter,
+}) {
     return (
         <>
             <div>
@@ -15,7 +22,20 @@ export default function Sidebar({ brandResults, categoryResults }) {
                 <ul className="py-2 text-sm">
                     {categoryResults.map((category) => {
                         return (
-                            <li key={category.id} className="p-1 uppercase">
+                            <li
+                                onClick={() =>
+                                    handleSetFilter({
+                                        type: "categoryFilter",
+                                        value: category.name,
+                                    })
+                                }
+                                key={category.id}
+                                className={`cursor-pointer p-1 uppercase ${
+                                    categoryFilter.includes(category.name)
+                                        ? "text-orange-500"
+                                        : ""
+                                }`}
+                            >
                                 {category.name}
                             </li>
                         );
@@ -32,18 +52,20 @@ export default function Sidebar({ brandResults, categoryResults }) {
                     {brandResults.map((brand) => {
                         return (
                             <li
+                                onClick={() =>
+                                    handleSetFilter({
+                                        type: "brandFilter",
+                                        value: brand.name,
+                                    })
+                                }
                                 key={brand.id}
-                                className="flex items-center gap-1 py-1"
+                                className={`cursor-pointer p-1 uppercase ${
+                                    brandFilter.includes(brand.name)
+                                        ? "text-orange-500"
+                                        : ""
+                                }`}
                             >
-                                <input
-                                    type="checkbox"
-                                    name="brands"
-                                    defaultValue={brand.id}
-                                    id=""
-                                />
-                                <label className="uppercase">
-                                    {brand.name}
-                                </label>
+                                {brand.name}
                             </li>
                         );
                     })}
@@ -107,10 +129,11 @@ export default function Sidebar({ brandResults, categoryResults }) {
                         <span className="text-sm text-neutral-500">& Up</span>
                     </div>
                 </div>
-                <button className="mt-2 block w-full rounded-sm bg-orange-500 py-1 text-sm text-neutral-50 hover:opacity-80">
-                    Filter
-                </button>
-                <button className="mt-2 block w-full rounded-sm bg-orange-500 py-1 text-sm text-neutral-50 hover:opacity-80">
+
+                <button
+                    onClick={handleClearFilter}
+                    className="mt-2 block w-full rounded-sm bg-orange-500 py-1 text-sm text-neutral-50 hover:opacity-80"
+                >
                     Clear all
                 </button>
             </div>
@@ -121,4 +144,8 @@ export default function Sidebar({ brandResults, categoryResults }) {
 Sidebar.propTypes = {
     brandResults: PropTypes.array,
     categoryResults: PropTypes.array,
+    handleSetFilter: PropTypes.func,
+    brandFilter: PropTypes.string,
+    categoryFilter: PropTypes.string,
+    handleClearFilter: PropTypes.func,
 };

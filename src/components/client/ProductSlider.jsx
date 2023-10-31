@@ -37,8 +37,13 @@ export default function ProductSlider({ images }) {
             >
                 {images.map((image) => {
                     return (
-                        <SwiperSlide key={image}>
-                            <img src={image} />
+                        <SwiperSlide key={image.id}>
+                            <img
+                                style={{ objectFit: "contain" }}
+                                src={
+                                    import.meta.env.VITE_IMAGE_LINK + image.name
+                                }
+                            />
                         </SwiperSlide>
                     );
                 })}
@@ -84,8 +89,12 @@ export default function ProductSlider({ images }) {
             >
                 {images.map((image) => {
                     return (
-                        <SwiperSlide className="p-1" key={image}>
-                            <img src={image} />
+                        <SwiperSlide className="p-1" key={image.id}>
+                            <img
+                                src={
+                                    import.meta.env.VITE_IMAGE_LINK + image.name
+                                }
+                            />
                         </SwiperSlide>
                     );
                 })}

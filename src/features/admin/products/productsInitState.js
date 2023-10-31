@@ -1,8 +1,10 @@
 export const productsInitState = {
+    categories: [],
+    brands: [],
     searchParam: "",
     filter: "all",
     currentPage: 1,
-    totalPage: 0,
+    totalPage: 1,
     links: [],
     firstLoading: false,
     isError: false,
@@ -45,5 +47,22 @@ export const productsInitState = {
         thumbPreviews: []
     },
     status: "",
-    errorMsg: ""
+    errorMsg: "",
+    selected: {
+        productId: "",
+        classifyId: "",
+        stock: 0,
+    },
+    addToCartForm: {
+        productId: "",
+        classifyId: "",
+        quantity: 0,
+    },
+    myCart: JSON.parse(localStorage.getItem('myCart')) || [],
+    loadingMessage: "",
+    successMessage: "",
+    errorMessage: "",
+    toastLoading: false,
+    toastSuccess: false,
+    toastError: false,
 }

@@ -7,27 +7,27 @@ const categories = axios.create({
         'Content-Type': 'application/x-www-form-urlencoded',
     }
 });
-export const fetchCategories = createAsyncThunk("Categories/get",
-    async () => {
+export const fetchCategories = createAsyncThunk("ManagerCategories/get",
+    async ({ page }, thunkApi) => {
         try {
             const { data } = await categories({
                 method: 'get',
                 url: '/categories',
                 params: {
-                    page: 1
+                    page
                 }
             })
             return data
         } catch (error) {
-            return error
+            return thunkApi.rejectWithValue(error)
         }
     })
-export const createCategories = createAsyncThunk("Categories/create",
-    async ({ body }) => {
+export const createCategories = createAsyncThunk("ManagerCategories/create",
+    async ({ body }, thunkApi) => {
         try {
             const { data } = await categories({
                 method: 'post',
-                url: '/categories',
+                url: '/admin/categories',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
                 },
@@ -35,30 +35,30 @@ export const createCategories = createAsyncThunk("Categories/create",
             })
             return data
         } catch (error) {
-            return error
+            return thunkApi.rejectWithValue(error)
         }
     })
-export const deleteCategories = createAsyncThunk("Categories/delete",
-    async ({ id }) => {
+export const deleteCategories = createAsyncThunk("ManagerCategories/delete",
+    async ({ id }, thunkApi) => {
         try {
             const { data } = await categories({
                 method: 'delete',
-                url: `/categories/${id}`,
+                url: `/admin/categories/${id}`,
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
                 },
             })
             return data
         } catch (error) {
-            return error
+            return thunkApi.rejectWithValue(error)
         }
     })
-export const updateCategories = createAsyncThunk("Categories/update",
-    async ({ id, body }) => {
+export const updateCategories = createAsyncThunk("ManagerCategories/update",
+    async ({ id, body }, thunkApi) => {
         try {
             const { data } = await categories({
                 method: 'put',
-                url: `/categories/${id}`,
+                url: `/admin/categories/${id}`,
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
                 },
@@ -66,6 +66,6 @@ export const updateCategories = createAsyncThunk("Categories/update",
             })
             return data
         } catch (error) {
-            return error
+            return thunkApi.rejectWithValue(error)
         }
     })

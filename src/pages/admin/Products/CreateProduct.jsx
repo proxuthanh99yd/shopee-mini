@@ -3,8 +3,6 @@ import { SelectImage } from "../../../components/admin";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories } from "../../../features/categories/categoriesThunkApi";
-import { fetchBrands } from "../../../features/brands/brandsThunkApi";
 import {
     clearForm,
     handleInput,
@@ -14,20 +12,26 @@ import {
     setImagePreview,
     setNewClassify,
     setThumbPreview,
-} from "../../../features/products/productsSlice";
-import { createProducts } from "../../../features/products/productsThunkApi";
+} from "../../../features/admin/products/productsSlice";
+import {
+    createProducts,
+    fetchCategoriesAndBrands,
+} from "../../../features/admin/products/productsThunkApi";
 import { toast } from "react-toastify";
 export default function CreateProduct() {
-    const { create: product, status } = useSelector((state) => state.products);
-    const { results: categories } = useSelector((state) => state.categories);
-    const { results: brands } = useSelector((state) => state.brands);
+    const {
+        create: product,
+        status,
+        categories,
+        brands,
+    } = useSelector((state) => state.managerProducts);
+
     const dispatch = useDispatch();
     const imageRef = useRef({});
     const thumbRef = useRef([]);
     const toastId = useRef(null);
     useEffect(() => {
-        dispatch(fetchCategories());
-        dispatch(fetchBrands());
+        dispatch(fetchCategoriesAndBrands());
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {

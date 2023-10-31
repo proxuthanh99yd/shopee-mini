@@ -10,6 +10,7 @@ import {
 } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
+import { discountCalculator } from "../../utils/helper";
 
 export default function Header({
     isAuthenticating,
@@ -18,6 +19,7 @@ export default function Header({
     name,
     handleLogout,
     isAdmin,
+    carts,
 }) {
     return (
         <div className="bg-orange-600  text-neutral-50 ">
@@ -131,9 +133,79 @@ export default function Header({
                             <IoSearchOutline />
                         </button>
                     </div>
-                    <div className="mr-5 cursor-pointer text-3xl">
-                        <IoCartOutline />
-                    </div>
+                    {isAuthenticated || isLogin ? (
+                        <div className="group relative mr-5 cursor-pointer text-3xl">
+                            <Link to="/cart">
+                                <IoCartOutline />
+                            </Link>
+                            {carts.length > 0 && (
+                                <>
+                                    <span className="absolute right-0 top-0 flex h-4 w-4 -translate-y-1/3 translate-x-1/4  items-center justify-center rounded-full bg-neutral-50 text-xs text-orange-500">
+                                        {carts.length}
+                                    </span>
+                                    <ul className="invisible absolute right-0 top-full z-[99999] w-96 rounded-sm bg-neutral-50 text-base opacity-0 transition-opacity group-hover:visible group-hover:opacity-100">
+                                        <li className="block px-4 py-2 text-sm text-neutral-400">
+                                            <span className="">
+                                                Recently Added Products
+                                            </span>
+                                        </li>
+                                        {carts.slice(0, 5).map((cart) => {
+                                            return (
+                                                <li className="" key={cart.id}>
+                                                    <Link className="flex items-center justify-between gap-4 p-2 text-neutral-600 transition-colors hover:bg-neutral-200">
+                                                        <img
+                                                            className="h-10 w-10 object-cover"
+                                                            src={
+                                                                import.meta.env
+                                                                    .VITE_IMAGE_LINK +
+                                                                cart.product
+                                                                    .image
+                                                            }
+                                                            alt=""
+                                                        />
+                                                        <div className="flex flex-1 flex-col">
+                                                            <span className="flex-1 truncate">
+                                                                {
+                                                                    cart.product
+                                                                        .name
+                                                                }
+                                                            </span>
+                                                            <span className="self-start rounded-sm border p-0.5 text-xs">
+                                                                {
+                                                                    cart
+                                                                        .classify
+                                                                        .name
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                        <span className="text-orange-500">
+                                                            $
+                                                            {discountCalculator(
+                                                                cart.classify
+                                                                    .price,
+                                                                cart.product
+                                                                    .discount,
+                                                            )}
+                                                        </span>
+                                                    </Link>
+                                                </li>
+                                            );
+                                        })}
+                                        <li className="flex justify-end">
+                                            <Link
+                                                to="/cart"
+                                                className="m-2 rounded-sm bg-orange-500 p-1 text-sm text-neutral-50"
+                                            >
+                                                View My Shopping Cart
+                                            </Link>
+                                        </li>
+                                    </ul>
+                                </>
+                            )}
+                        </div>
+                    ) : (
+                        ""
+                    )}
                 </div>
             </header>
         </div>
@@ -147,4 +219,5 @@ Header.propTypes = {
     isLogin: PropTypes.bool,
     isAdmin: PropTypes.bool,
     handleLogout: PropTypes.func,
+    carts: PropTypes.array,
 };

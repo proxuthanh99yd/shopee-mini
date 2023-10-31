@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { IoCreateOutline, IoSearch, IoTrashBinOutline } from "react-icons/io5";
 import { dateFormat } from "../../../utils/helper";
 import Breadcrumb from "../../../components/Breadcrumb";
@@ -7,10 +7,14 @@ import {
     setCurrentPage,
     setFilter,
     setSearchParam,
-} from "../../../features/products/productsSlice";
-import { fetchProducts } from "../../../features/products/productsThunkApi";
+} from "../../../features/admin/products/productsSlice";
+import {
+    changeStatusProducts,
+    fetchProducts,
+} from "../../../features/admin/products/productsThunkApi";
 import { Link } from "react-router-dom";
-import ReactPaginate from "react-paginate";
+import { toast } from "react-toastify";
+import Paginate from "../../../components/Paginate";
 const currentLink = {
     name: "Products",
     path: "/admin/products",
@@ -31,19 +35,50 @@ export default function Products() {
         currentPage: page,
         filter: param,
         searchParam,
-    } = useSelector((state) => state.products);
-    const { authToken } = useSelector((state) => state.account);
+        toastLoading,
+        toastSuccess,
+        toastError,
+        loadingMessage,
+        successMessage,
+        errorMessage,
+    } = useSelector((state) => state.managerProducts);
     const dispatch = useDispatch();
 
     useEffect(() => {
         dispatch(fetchProducts({ page, param }));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [param, page]);
-    const handlePageClick = (event) => {
-        dispatch(setCurrentPage({ currentPage: event.selected + 1 }));
+    const toastId = useRef(null);
+    useEffect(() => {
+        if (toastLoading) {
+            toastId.current = toast.loading(loadingMessage);
+        }
+        if (toastSuccess) {
+            toast.update(toastId.current, {
+                render: successMessage,
+                type: "success",
+                isLoading: false,
+                autoClose: 2000,
+            });
+        }
+        if (toastError) {
+            toast.update(toastId.current, {
+                render: errorMessage,
+                type: "error",
+                isLoading: false,
+                autoClose: 2000,
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [toastLoading, toastSuccess, toastError]);
+    const handlePageClick = ({ selected }) => {
+        dispatch(setCurrentPage({ currentPage: selected + 1 }));
     };
     const handleSearch = () => {
-        dispatch(fetchProducts({ page, param, searchParam, authToken }));
+        dispatch(fetchProducts({ page, param, searchParam }));
+    };
+    const handleChangeStatus = (id) => {
+        dispatch(changeStatusProducts(id));
     };
     // if (isLoading) {
     //     return <p>Loading ...</p>;
@@ -66,7 +101,7 @@ export default function Products() {
                 <div className="mt-4 flex gap-2 p-1">
                     <button
                         disabled={isLoading}
-                        onClick={() => dispatch(setFilter({ param: "all" }))}
+                        onClick={() => dispatch(setFilter("all"))}
                         className={`${
                             param === "all"
                                 ? "border-orange-300 text-orange-300"
@@ -77,7 +112,7 @@ export default function Products() {
                     </button>
                     <button
                         disabled={isLoading}
-                        onClick={() => dispatch(setFilter({ param: "active" }))}
+                        onClick={() => dispatch(setFilter("active"))}
                         className={`${
                             param === "active"
                                 ? "border-orange-300 text-orange-300"
@@ -88,9 +123,7 @@ export default function Products() {
                     </button>
                     <button
                         disabled={isLoading}
-                        onClick={() =>
-                            dispatch(setFilter({ param: "out_of_stock" }))
-                        }
+                        onClick={() => dispatch(setFilter("out_of_stock"))}
                         className={`${
                             param === "out_of_stock"
                                 ? "border-orange-300 text-orange-300"
@@ -101,7 +134,7 @@ export default function Products() {
                     </button>
                     <button
                         disabled={isLoading}
-                        onClick={() => dispatch(setFilter({ param: "hidden" }))}
+                        onClick={() => dispatch(setFilter("hidden"))}
                         className={`${
                             param === "hidden"
                                 ? "border-orange-300 text-orange-300"
@@ -140,9 +173,14 @@ export default function Products() {
                             <div className="mx-1 basis-1/12">No.</div>
                             <div className="mx-1 basis-1/12">ID</div>
                             <div className="mx-1 flex-1">Name</div>
-                            <div className="mx-1 basis-2/12">Updated at</div>
-                            <div className="mx-1 basis-1/12">Image</div>
-                            <div className="mx-1 basis-3/12 text-center">
+                            <div className="mx-1 basis-1/12">Updated at</div>
+                            <div className="mx-1 basis-2/12 text-center">
+                                Image
+                            </div>
+                            <div className="mx-1 basis-1/12 text-center">
+                                Active
+                            </div>
+                            <div className="mx-1 basis-2/12 text-center">
                                 Action
                             </div>
                         </div>
@@ -156,16 +194,17 @@ export default function Products() {
                                         <div className="skeleton mx-1 basis-1/12"></div>
                                         <div className="skeleton mx-1 basis-1/12"></div>
                                         <div className="skeleton mx-1 flex-1"></div>
-                                        <div className="skeleton mx-1 basis-2/12"></div>
                                         <div className="skeleton mx-1 basis-1/12"></div>
-                                        <div className="skeleton mx-1 basis-3/12 text-center"></div>
+                                        <div className="skeleton mx-1 basis-2/12"></div>
+                                        <div className="skeleton mx-1 basis-1/12 text-center"></div>
+                                        <div className="skeleton mx-1 basis-2/12 text-center"></div>
                                     </div>
                                 );
                             })}
                         {/* table item start */}
                         {!isLoading &&
                             results.map((category, index) => {
-                                const { id, name, updated_at, image } =
+                                const { id, name, updated_at, image, active } =
                                     category;
                                 return (
                                     <div
@@ -190,23 +229,40 @@ export default function Products() {
                                             </span>
                                             {name}
                                         </div>
-                                        <div className="mx-1 basis-2/12">
+
+                                        <div className="mx-1 basis-1/12">
                                             <span className="font-semibold md:hidden">
                                                 Updated at :
                                             </span>
                                             {dateFormat(new Date(updated_at))}
                                         </div>
-                                        <div className="order-1 mx-1 basis-1/12 md:order-none">
+                                        <div className="order-1 mx-1 flex basis-2/12 justify-start md:order-none md:justify-center">
                                             <img
-                                                className="max-w-xs rounded md:w-16 md:object-cover"
-                                                src={
-                                                    import.meta.env
-                                                        .VITE_IMAGE_LINK + image
-                                                }
+                                                className="max-w-xs rounded md:w-20 md:object-cover"
+                                                src={image}
                                                 alt=""
                                             />
                                         </div>
-                                        <div className="mx-1 my-2 basis-3/12 text-center md:my-0">
+                                        <div className="mx-1 flex basis-1/12 items-center justify-start md:justify-center">
+                                            <span className="font-semibold md:hidden">
+                                                Active :{" "}
+                                            </span>
+                                            <button
+                                                onClick={() =>
+                                                    handleChangeStatus(id)
+                                                }
+                                                className={`${
+                                                    active
+                                                        ? "bg-green-600"
+                                                        : "bg-neutral-600"
+                                                } transition-color ml-1 inline-flex h-5 w-5 items-center gap-1 rounded-full ${
+                                                    active
+                                                        ? "hover:bg-green-400"
+                                                        : "hover:bg-neutral-400"
+                                                }`}
+                                            ></button>
+                                        </div>
+                                        <div className="mx-1 my-2 flex basis-2/12 items-center justify-start md:my-0 md:justify-center">
                                             <span className="font-semibold md:hidden">
                                                 Action :{" "}
                                             </span>
@@ -229,15 +285,10 @@ export default function Products() {
                         {/* table item end */}
                     </div>
                 </div>
-                <ReactPaginate
-                    className="flex items-center justify-center gap-4 rounded border-t border-gray-200 bg-slate-100 px-4 py-3 sm:px-6 md:rounded-t-none"
-                    breakLabel="..."
-                    nextLabel="next >"
-                    onPageChange={handlePageClick}
-                    pageRangeDisplayed={5}
+                <Paginate
+                    handlePageClick={handlePageClick}
+                    currentPage={page}
                     pageCount={totalPage}
-                    previousLabel="< previous"
-                    renderOnZeroPageCount={null}
                 />
             </div>
         </>
