@@ -57,7 +57,7 @@ export const cancelOrders = createAsyncThunk("Order/cancelOrders",
     async (id, thunkApi) => {
         try {
             const { data } = await order({
-                method: 'post',
+                method: 'put',
                 url: `orders/${id}/cancel`,
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`

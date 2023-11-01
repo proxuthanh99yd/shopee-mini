@@ -127,8 +127,8 @@ export const changeStatusProducts = createAsyncThunk("ManagerProducts/changeStat
     async (id, thunkApi) => {
         try {
             const { data } = await products({
-                method: 'post',
-                url: `/admin/product/${id}/change-status`,
+                method: 'patch',
+                url: `/admin/product/${id}/active`,
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token') || ''}`
                 }

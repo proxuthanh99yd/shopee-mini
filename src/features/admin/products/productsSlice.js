@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { productsInitState as initialState } from "./productsInitState";
-import { changeStatusProducts, createProducts, deleteProducts, fetchCategoriesAndBrands, fetchProducts, fetchSingleProduct, updateProducts } from "./productsThunkApi";
+import { changeStatusProducts, createProducts, deleteProducts, fetchProducts, fetchSingleProduct, updateProducts } from "./productsThunkApi";
 
 const productsSlice = createSlice({
     name: "Products",
@@ -161,21 +161,23 @@ const productsSlice = createSlice({
             .addCase(fetchSingleProduct.fulfilled, (state, { payload }) => {
                 state.isLoading = false;
 
-                state.edit.id = payload.id;
-                state.edit.name = payload.name;
-                state.edit.description = payload.description;
-                state.edit.image = import.meta.env.VITE_IMAGE_LINK + payload.image
-                state.edit.imagePreview = [import.meta.env.VITE_IMAGE_LINK + payload.image];
-                state.edit.active = payload.active;
-                state.edit.discount = payload.discount;
-                state.edit.category_id = payload.category_id;
-                state.edit.brand_id = payload.brand_id;
-                state.edit.thumbnails = payload.thumbnails
-                state.edit.thumbPreviews = payload.thumbnails.reduce((prev, curr) => {
+                state.edit.id = payload.product.id;
+                state.edit.name = payload.product.name;
+                state.edit.description = payload.product.description;
+                state.edit.image = import.meta.env.VITE_IMAGE_LINK + payload.product.image
+                state.edit.imagePreview = [import.meta.env.VITE_IMAGE_LINK + payload.product.image];
+                state.edit.active = payload.product.active;
+                state.edit.discount = payload.product.discount;
+                state.edit.category_id = payload.product.category_id;
+                state.edit.brand_id = payload.product.brand_id;
+                state.edit.thumbnails = payload.product.thumbnails
+                state.edit.thumbPreviews = payload.product.thumbnails.reduce((prev, curr) => {
                     return [...prev, import.meta.env.VITE_IMAGE_LINK + curr.name]
                 }, []);
-                state.edit.classification = payload.classification[0];
-                state.edit.classify = payload.classify;
+                state.edit.classification = payload.product.classification[0];
+                state.edit.classify = payload.product.classification[0].classify;
+                state.brands = payload.brands;
+                state.categories = payload.categories
             })
             .addCase(fetchSingleProduct.rejected, (state) => {
                 state.isLoading = false;
@@ -261,10 +263,6 @@ const productsSlice = createSlice({
                 state.loadingMessage = "";
                 state.successMessage = "";
                 state.errorMessage = `${payload.status} - ${payload.data.message}`
-            })
-            .addCase(fetchCategoriesAndBrands.fulfilled, (state, { payload }) => {
-                state.categories = payload.categories;
-                state.brands = payload.brands;
             })
     }
 })

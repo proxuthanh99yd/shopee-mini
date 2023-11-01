@@ -9,7 +9,7 @@ const products = axios.create({
 });
 
 export const fetchProducts = createAsyncThunk("Products/get",
-    async ({ sort, brandFilter: brand, categoryFilter: category, page = 1 }, thunkApi) => {
+    async ({ sort, brandFilter: brand, categoryFilter: category, search, page = 1 }, thunkApi) => {
         try {
             const { data } = await products({
                 method: 'get',
@@ -18,7 +18,8 @@ export const fetchProducts = createAsyncThunk("Products/get",
                     page,
                     sort,
                     brand,
-                    category
+                    category,
+                    search
                 }
             });
             return data

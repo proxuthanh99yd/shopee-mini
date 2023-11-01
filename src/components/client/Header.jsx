@@ -20,6 +20,9 @@ export default function Header({
     handleLogout,
     isAdmin,
     carts,
+    searchParam,
+    setSearchParam,
+    handleSearch,
 }) {
     return (
         <div className="bg-orange-600  text-neutral-50 ">
@@ -125,11 +128,16 @@ export default function Header({
                     </div>
                     <div className="relative flex-1">
                         <input
-                            className="w-full rounded-sm px-3 py-1.5 text-sm focus:outline-1 focus:outline-orange-500"
+                            onChange={setSearchParam}
+                            value={searchParam}
+                            className="w-full rounded-sm px-3 py-1.5 text-sm text-neutral-600 focus:outline-1 focus:outline-orange-500"
                             type="text"
                             placeholder="Search ..."
                         />
-                        <button className="absolute right-1 top-1/2 -translate-y-1/2 rounded-sm bg-orange-600 px-4 py-1 text-lg hover:opacity-80">
+                        <button
+                            onClick={handleSearch}
+                            className="absolute right-1 top-1/2 -translate-y-1/2 rounded-sm bg-orange-600 px-4 py-1 text-lg hover:opacity-80"
+                        >
                             <IoSearchOutline />
                         </button>
                     </div>

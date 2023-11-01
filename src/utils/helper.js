@@ -94,7 +94,7 @@ export function checkoutTotalCalculator(items) {
 
 export function discountOrderTotalCalculator(items) {
     return items.reduce((p, c) => {
-        return p + discountCalculator(c.price, c.product.discount)
+        return p + (discountCalculator(c.price, c.product.discount) * c.quantity)
     }, 0).toFixed(2)
 }
 

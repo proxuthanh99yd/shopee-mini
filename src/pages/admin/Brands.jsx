@@ -123,9 +123,9 @@ export default function Brands() {
     const handlePageClick = ({ selected }) => {
         dispatch(setCurrentPage({ currentPage: selected + 1 }));
     };
-    if (isLoading) {
-        return <p>Loading ...</p>;
-    }
+    // if (isLoading) {
+    //     return <Loading />;
+    // }
     if (isError) {
         return <p>Error ...</p>;
     }
@@ -181,60 +181,80 @@ export default function Brands() {
                                 Action
                             </div>
                         </div>
+                        {isLoading &&
+                            Array.from({ length: 10 }, (_, i) => {
+                                return (
+                                    <div
+                                        key={i}
+                                        className="my-2 flex flex-col rounded bg-orange-50 pb-2 pl-3 transition-colors hover:bg-orange-100 md:my-0 md:flex-row md:items-center md:rounded-none md:border-b md:p-1"
+                                    >
+                                        <div className="skeleton mx-1 basis-1/12"></div>
+                                        <div className="skeleton mx-1 basis-1/12"></div>
+                                        <div className="skeleton mx-1 flex-1"></div>
+                                        <div className="skeleton mx-1 basis-2/12 text-center"></div>
+                                        <div className="skeleton mx-1 basis-3/12 text-center"></div>
+                                    </div>
+                                );
+                            })}
                         {/* table item start */}
-                        {results.map((brand, index) => {
-                            const { id, name, updated_at } = brand;
-                            return (
-                                <div
-                                    key={id}
-                                    className="my-2 rounded bg-orange-50 pb-2 pl-3 transition-colors hover:bg-orange-100 md:my-0 md:flex md:items-center md:rounded-none md:border-b md:p-1"
-                                >
-                                    <div className="mx-1 basis-1/12">
-                                        <span className="font-semibold md:hidden">
-                                            No. :{" "}
-                                        </span>
-                                        {index + 1}
+                        {!isLoading &&
+                            results.map((brand, index) => {
+                                const { id, name, updated_at } = brand;
+                                return (
+                                    <div
+                                        key={id}
+                                        className="my-2 rounded bg-orange-50 pb-2 pl-3 transition-colors hover:bg-orange-100 md:my-0 md:flex md:items-center md:rounded-none md:border-b md:p-1"
+                                    >
+                                        <div className="mx-1 basis-1/12">
+                                            <span className="font-semibold md:hidden">
+                                                No. :{" "}
+                                            </span>
+                                            {index + 1}
+                                        </div>
+                                        <div className="mx-1 basis-1/12">
+                                            <span className="font-semibold md:hidden">
+                                                ID :{" "}
+                                            </span>
+                                            {id}
+                                        </div>
+                                        <div className="mx-1 flex-1 cursor-pointer rounded-sm py-1">
+                                            <span className="font-semibold md:hidden">
+                                                Name :{" "}
+                                            </span>
+                                            {name}
+                                        </div>
+                                        <div className="mx-1 basis-2/12">
+                                            <span className="font-semibold md:hidden">
+                                                Updated at :
+                                            </span>
+                                            {dateFormat(new Date(updated_at))}
+                                        </div>
+                                        <div className="mx-1 basis-3/12 text-center">
+                                            <span className="font-semibold md:hidden">
+                                                Action :{" "}
+                                            </span>
+                                            <button
+                                                onClick={() =>
+                                                    handleUpdate(brand)
+                                                }
+                                                className="mr-1 inline-flex items-center gap-1 rounded bg-orange-400 px-3 py-1 text-xs text-orange-50 transition-colors hover:bg-orange-500 "
+                                            >
+                                                Edit{" "}
+                                                <IoCreateOutline className="text-sm" />
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleDelete(brand)
+                                                }
+                                                className="inline-flex items-center gap-1 rounded bg-red-400 px-3 py-1 text-xs text-red-50 transition-colors hover:bg-red-500 "
+                                            >
+                                                Delete{" "}
+                                                <IoTrashBinOutline className="text-sm" />
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="mx-1 basis-1/12">
-                                        <span className="font-semibold md:hidden">
-                                            ID :{" "}
-                                        </span>
-                                        {id}
-                                    </div>
-                                    <div className="mx-1 flex-1 cursor-pointer rounded-sm py-1">
-                                        <span className="font-semibold md:hidden">
-                                            Name :{" "}
-                                        </span>
-                                        {name}
-                                    </div>
-                                    <div className="mx-1 basis-2/12">
-                                        <span className="font-semibold md:hidden">
-                                            Updated at :
-                                        </span>
-                                        {dateFormat(new Date(updated_at))}
-                                    </div>
-                                    <div className="mx-1 basis-3/12 text-center">
-                                        <span className="font-semibold md:hidden">
-                                            Action :{" "}
-                                        </span>
-                                        <button
-                                            onClick={() => handleUpdate(brand)}
-                                            className="mr-1 inline-flex items-center gap-1 rounded bg-orange-400 px-3 py-1 text-xs text-orange-50 transition-colors hover:bg-orange-500 "
-                                        >
-                                            Edit{" "}
-                                            <IoCreateOutline className="text-sm" />
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(brand)}
-                                            className="inline-flex items-center gap-1 rounded bg-red-400 px-3 py-1 text-xs text-red-50 transition-colors hover:bg-red-500 "
-                                        >
-                                            Delete{" "}
-                                            <IoTrashBinOutline className="text-sm" />
-                                        </button>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                                );
+                            })}
 
                         {/* table item end */}
                     </div>

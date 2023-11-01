@@ -23,6 +23,7 @@ import {
     Products,
     Users,
 } from "../pages/admin";
+import OrderDetail from "../pages/admin/OrderDetail";
 
 export const router = createBrowserRouter([
     {
@@ -112,6 +113,10 @@ export const router = createBrowserRouter([
             {
                 path: "orders",
                 element: <Orders />,
+            },
+            {
+                path: "orders/:id",
+                element: <OrderDetail />,
             },
         ],
     },

@@ -187,7 +187,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="ml-14 flex basis-3/12 flex-col items-center gap-4 border-l">
                     <img
-                        src="../public/images/book.jpg"
+                        src="/images/book.jpg"
                         className="h-28 w-28 rounded-full object-cover shadow"
                         alt=""
                     />

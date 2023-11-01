@@ -14,6 +14,7 @@ import { dateFormat } from "../../utils/helper";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 
 const currentLink = {
     name: "Orders",
@@ -75,9 +76,9 @@ export default function Orders() {
     const handleChangeStatus = (id, e) => {
         dispatch(changeStatusOrders({ id, value: e.target.value }));
     };
-    if (isLoading) {
-        return <p>Loading ...</p>;
-    }
+    // if (isLoading) {
+    //     return <Loading />;
+    // }
     if (isError) {
         return <p>Error ...</p>;
     }
@@ -182,84 +183,103 @@ export default function Orders() {
                                 Status
                             </div>
                         </div>
+                        {isLoading &&
+                            Array.from({ length: 10 }, (_, i) => {
+                                return (
+                                    <div
+                                        key={i}
+                                        className="my-2 flex flex-col rounded bg-orange-50 pb-2 pl-3 transition-colors hover:bg-orange-100 md:my-0 md:flex-row md:items-center md:rounded-none md:border-b md:p-1"
+                                    >
+                                        <div className="skeleton mx-1 basis-1/12"></div>
+                                        <div className="skeleton mx-1 basis-1/12"></div>
+                                        <div className="skeleton mx-1 flex-1"></div>
+                                        <div className="skeleton mx-1 basis-2/12 text-center"></div>
+                                        <div className="skeleton mx-1 basis-2/12 text-center"></div>
+                                    </div>
+                                );
+                            })}
                         {/* table item start */}
-                        {results.map((user, index) => {
-                            const { id, total_price, order_date, status } =
-                                user;
-                            return (
-                                <div
-                                    key={id}
-                                    className="my-2 rounded bg-orange-50 pb-2 pl-3 transition-colors hover:bg-orange-100 md:my-0 md:flex md:items-center md:rounded-none md:border-b md:p-1"
-                                >
-                                    <div className="mx-1 basis-1/12">
-                                        <span className="font-semibold md:hidden">
-                                            No. :{" "}
-                                        </span>
-                                        {index + 1}
-                                    </div>
-                                    <div className="mx-1 basis-1/12">
-                                        <span className="font-semibold md:hidden">
-                                            ID :{" "}
-                                        </span>
-                                        {id}
-                                    </div>
-                                    <div className="mx-1 flex-1 cursor-pointer rounded-sm py-1">
-                                        <span className="font-semibold md:hidden">
-                                            Total Price :{" "}
-                                        </span>
-                                        {total_price}$
-                                    </div>
-                                    <div className="mx-1 basis-2/12">
-                                        <span className="font-semibold md:hidden">
-                                            Order date :
-                                        </span>
-                                        {dateFormat(new Date(order_date))}
-                                    </div>
-                                    <div className="mx-1 basis-2/12 text-start md:text-center">
-                                        <span className="font-semibold md:hidden">
-                                            Status :{" "}
-                                        </span>
-                                        <select
-                                            onChange={(e) =>
-                                                handleChangeStatus(id, e)
-                                            }
-                                            defaultValue={status}
+                        {!isLoading &&
+                            results.map((user, index) => {
+                                const { id, total_price, order_date, status } =
+                                    user;
+                                return (
+                                    <div
+                                        key={id}
+                                        className="my-2 rounded bg-orange-50 pb-2 pl-3 transition-colors hover:bg-orange-100 md:my-0 md:flex md:items-center md:rounded-none md:border-b md:p-1"
+                                    >
+                                        <div className="mx-1 basis-1/12">
+                                            <span className="font-semibold md:hidden">
+                                                No. :{" "}
+                                            </span>
+                                            {index + 1}
+                                        </div>
+                                        <div className="mx-1 basis-1/12">
+                                            <span className="font-semibold md:hidden">
+                                                ID :{" "}
+                                            </span>
+                                            {id}
+                                        </div>
+                                        <Link
+                                            to={`/admin/orders/${id}`}
+                                            className="mx-1 flex-1 cursor-pointer rounded-sm py-1"
                                         >
-                                            <option
-                                                disabled={status > 0}
-                                                value="0"
-                                                key="0"
+                                            <span className="font-semibold md:hidden">
+                                                Total Price :{" "}
+                                            </span>
+                                            {total_price}$
+                                        </Link>
+                                        <div className="mx-1 basis-2/12">
+                                            <span className="font-semibold md:hidden">
+                                                Order date :
+                                            </span>
+                                            {dateFormat(new Date(order_date))}
+                                        </div>
+                                        <div className="mx-1 basis-2/12 text-start md:text-center">
+                                            <span className="font-semibold md:hidden">
+                                                Status :{" "}
+                                            </span>
+                                            <select
+                                                onChange={(e) =>
+                                                    handleChangeStatus(id, e)
+                                                }
+                                                defaultValue={status}
                                             >
-                                                Waiting
-                                            </option>
-                                            <option
-                                                disabled={status > 1}
-                                                value="1"
-                                                key="1"
-                                            >
-                                                Shipping
-                                            </option>
-                                            <option
-                                                disabled={status > 2}
-                                                value="2"
-                                                key="2"
-                                            >
-                                                Completed
-                                            </option>
-                                            {status == 3 && (
                                                 <option
-                                                    disabled
-                                                    value="3"
-                                                    key="3"
+                                                    disabled={status > 0}
+                                                    value="0"
+                                                    key="0"
                                                 >
-                                                    Canceled
+                                                    Waiting
                                                 </option>
-                                            )}
-                                        </select>
+                                                <option
+                                                    disabled={status > 1}
+                                                    value="1"
+                                                    key="1"
+                                                >
+                                                    Shipping
+                                                </option>
+                                                <option
+                                                    disabled={status > 2}
+                                                    value="2"
+                                                    key="2"
+                                                >
+                                                    Completed
+                                                </option>
+                                                {status == 3 && (
+                                                    <option
+                                                        disabled
+                                                        value="3"
+                                                        key="3"
+                                                    >
+                                                        Canceled
+                                                    </option>
+                                                )}
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })}
+                                );
+                            })}
 
                         {/* table item end */}
                     </div>

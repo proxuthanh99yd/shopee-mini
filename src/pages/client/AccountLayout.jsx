@@ -15,7 +15,7 @@ export default function AccountLayout() {
                     <div className="flex items-center gap-2 border-b px-2 pb-4">
                         <img
                             className="h-12 w-12 rounded-full object-cover"
-                            src="../public/images/book.jpg"
+                            src="/images/book.jpg"
                             alt=""
                         />
                         <div className="flex flex-col">

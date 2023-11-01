@@ -10,7 +10,7 @@ const productsSlice = createSlice({
             state.currentPage = payload + 1
         },
         setSearchParam: (state, { payload }) => {
-            state.searchParam = payload.searchParam
+            state.searchParam = payload
         },
         setSort: (state, { payload }) => {
             state.sort = payload

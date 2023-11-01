@@ -55,8 +55,8 @@ export default function ListProduct({
                 </div>
                 <div className="flex items-center gap-5">
                     <div>
-                        <span className="text-orange-500">1</span>/
-                        <span>17</span>
+                        <span className="text-orange-500">{currentPage}</span>/
+                        <span>{pageCount}</span>
                     </div>
                     <div className="flex gap-0.5">
                         <button

@@ -16,7 +16,6 @@ import {
     setThumbPreview,
 } from "../../../features/admin/products/productsSlice";
 import {
-    fetchCategoriesAndBrands,
     fetchSingleProduct,
     updateProducts,
 } from "../../../features/admin/products/productsThunkApi";
@@ -42,7 +41,6 @@ export default function EditProduct() {
     const thumbRef = useRef([]);
     useEffect(() => {
         dispatch(fetchSingleProduct(id));
-        dispatch(fetchCategoriesAndBrands());
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
     const toastId = useRef(null);

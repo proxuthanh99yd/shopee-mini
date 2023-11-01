@@ -11,4 +11,6 @@ export const orderInitState = {
     toastLoading: false,
     toastSuccess: false,
     toastError: false,
+    openDetail: false,
+    result: {}
 }

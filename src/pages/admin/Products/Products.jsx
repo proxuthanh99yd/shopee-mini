@@ -81,7 +81,7 @@ export default function Products() {
         dispatch(changeStatusProducts(id));
     };
     // if (isLoading) {
-    //     return <p>Loading ...</p>;
+    //     return <Loading />;
     // }
     if (isError) {
         return <p>Error ...</p>;

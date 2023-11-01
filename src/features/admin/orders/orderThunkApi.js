@@ -33,6 +33,27 @@ export const fetchOrders = createAsyncThunk("ManagerOrders/fetchOrders",
         }
     })
 
+export const fetchSingleOrder = createAsyncThunk("ManagerOrders/fetchSingleOrder",
+    async (id, thunkApi) => {
+        try {
+            const { data } = await auth({
+                method: 'get',
+                url: `/admin/order/${id}`,
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
+                }
+            });
+            return data
+        } catch (error) {
+            const throwError = {
+                data: error.response.data,
+                status: error.response.status,
+                headers: error.response.headers,
+            }
+            return thunkApi.rejectWithValue(throwError)
+        }
+    })
+
 export const changeStatusOrders = createAsyncThunk("ManagerOrders/changeStatusOrders",
     async ({ id, value }, thunkApi) => {
         let status = value;

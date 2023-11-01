@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { orderInitState as initialState } from "./orderInitState"
-import { changeStatusOrders, fetchOrders } from "./orderThunkApi";
+import { changeStatusOrders, fetchOrders, fetchSingleOrder } from "./orderThunkApi";
 
 const orderSlice = createSlice({
     name: "managerOrder",
@@ -51,6 +51,7 @@ const orderSlice = createSlice({
                     }
                     return result
                 })
+                state.result = { ...state.result, ...payload }
             })
             .addCase(changeStatusOrders.rejected, (state, { payload }) => {
                 state.toastLoading = false;
@@ -58,6 +59,19 @@ const orderSlice = createSlice({
                 state.toastError = true;
                 state.loadingMessage = "";
                 state.successMessage = "";
+                state.errorMessage = `${payload.status} - ${payload.data.message}`
+            })
+            .addCase(fetchSingleOrder.pending, (state) => {
+                state.isLoading = true
+                state.isError = false
+            })
+            .addCase(fetchSingleOrder.fulfilled, (state, { payload }) => {
+                state.isLoading = false;
+                state.result = payload;
+            })
+            .addCase(fetchSingleOrder.rejected, (state, { payload }) => {
+                state.isLoading = false
+                state.isError = true
                 state.errorMessage = `${payload.status} - ${payload.data.message}`
             })
     }
