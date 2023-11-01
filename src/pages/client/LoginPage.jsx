@@ -128,7 +128,7 @@ export default function LoginPage() {
             <div className="relative bg-loginBg">
                 <img
                     className="mx-auto block"
-                    src="../public/images/loginBanner.jpg"
+                    src="/images/loginBanner.jpg"
                     alt=""
                 />
                 <div className="absolute right-[10%] top-1/2 flex w-[400px] -translate-y-1/2 flex-col gap-4 rounded-sm bg-slate-100 p-8">

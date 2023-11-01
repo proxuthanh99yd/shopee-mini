@@ -25,35 +25,35 @@ export default function BannerSlider() {
                 <SwiperSlide>
                     <img
                         className="h-full w-full object-cover"
-                        src="../public/images/banner-1.jpg"
+                        src="/images/banner-1.jpg"
                         alt=""
                     />
                 </SwiperSlide>
                 <SwiperSlide>
                     <img
                         className="h-full w-full object-cover"
-                        src="../public/images/banner-2.png"
+                        src="/images/banner-2.png"
                         alt=""
                     />
                 </SwiperSlide>
                 <SwiperSlide>
                     <img
                         className="h-full w-full object-cover"
-                        src="../public/images/banner-3.jpg"
+                        src="/images/banner-3.jpg"
                         alt=""
                     />
                 </SwiperSlide>
                 <SwiperSlide>
                     <img
                         className="h-full w-full object-cover"
-                        src="../public/images/banner-4.jpg"
+                        src="/images/banner-4.jpg"
                         alt=""
                     />
                 </SwiperSlide>
                 <SwiperSlide>
                     <img
                         className="h-full w-full object-cover"
-                        src="../public/images/banner-5.png"
+                        src="/images/banner-5.png"
                         alt=""
                     />
                 </SwiperSlide>

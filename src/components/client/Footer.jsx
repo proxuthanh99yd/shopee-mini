@@ -51,7 +51,7 @@ export default function Footer() {
                                     >
                                         <img
                                             className="h-full w-full object-contain"
-                                            src={`../public/images/payment-${i}.png`}
+                                            src={`/images/payment-${i}.png`}
                                             alt=""
                                         />
                                     </div>
@@ -70,9 +70,7 @@ export default function Footer() {
                                     >
                                         <img
                                             className="h-full w-full object-contain"
-                                            src={`../public/images/logitic-${
-                                                i + 1
-                                            }.png`}
+                                            src={`/images/logitic-${i + 1}.png`}
                                             alt=""
                                         />
                                     </div>
