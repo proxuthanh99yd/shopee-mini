@@ -86,7 +86,7 @@ export const deleteProducts = createAsyncThunk("ManagerProducts/delete",
         try {
             const { data } = await products({
                 method: 'delete',
-                url: `/admin/products/${id}`,
+                url: `/admin/product/${id}`,
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token') || ''}`
                 },

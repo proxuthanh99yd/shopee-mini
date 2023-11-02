@@ -27,7 +27,7 @@ export const createCategories = createAsyncThunk("ManagerCategories/create",
         try {
             const { data } = await categories({
                 method: 'post',
-                url: '/admin/categories',
+                url: '/admin/category',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
                 },
@@ -43,7 +43,7 @@ export const deleteCategories = createAsyncThunk("ManagerCategories/delete",
         try {
             const { data } = await categories({
                 method: 'delete',
-                url: `/admin/categories/${id}`,
+                url: `/admin/category/${id}`,
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
                 },
@@ -58,7 +58,7 @@ export const updateCategories = createAsyncThunk("ManagerCategories/update",
         try {
             const { data } = await categories({
                 method: 'put',
-                url: `/admin/categories/${id}`,
+                url: `/admin/category/${id}`,
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
                 },

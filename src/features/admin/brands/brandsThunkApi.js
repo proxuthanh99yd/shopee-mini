@@ -32,7 +32,7 @@ export const createBrands = createAsyncThunk("ManagerBrands/create",
         try {
             const { data } = await brands({
                 method: 'post',
-                url: '/admin/brands',
+                url: '/admin/brand',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
                 },
@@ -53,7 +53,7 @@ export const deleteBrands = createAsyncThunk("ManagerBrands/delete",
         try {
             const { data } = await brands({
                 method: 'delete',
-                url: `/admin/brands/${id}`,
+                url: `/admin/brand/${id}`,
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
                 },
@@ -73,7 +73,7 @@ export const updateBrands = createAsyncThunk("ManagerBrands/update",
         try {
             const { data } = await brands({
                 method: 'put',
-                url: `/admin/brands/${id}`,
+                url: `/admin/brand/${id}`,
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
                 },
