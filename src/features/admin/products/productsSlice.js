@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { productsInitState as initialState } from "./productsInitState";
-import { changeStatusProducts, createProducts, deleteProducts, fetchProducts, fetchSingleProduct, updateProducts } from "./productsThunkApi";
+import { changeStatusProducts, createProducts, deleteProducts, fetchCategoriesAndBrands, fetchProducts, fetchSingleProduct, updateProducts } from "./productsThunkApi";
 
 const productsSlice = createSlice({
     name: "Products",
@@ -263,6 +263,10 @@ const productsSlice = createSlice({
                 state.loadingMessage = "";
                 state.successMessage = "";
                 state.errorMessage = `${payload.status} - ${payload.data.message}`
+            })
+            .addCase(fetchCategoriesAndBrands.fulfilled, (state, { payload }) => {
+                state.brands = payload.brands;
+                state.categories = payload.categories
             })
     }
 })
