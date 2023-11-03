@@ -9,7 +9,6 @@ import { setInput } from "../../features/client/account/accountSlice";
 import { useEffect } from "react";
 import { useRef } from "react";
 import { toast } from "react-toastify";
-import { IoHomeOutline } from "react-icons/io5";
 export default function LoginPage() {
     const navigate = useNavigate();
     const {
@@ -115,20 +114,8 @@ export default function LoginPage() {
 
     return (
         <div>
-            <div className="fixed bottom-0 left-0 z-[9999] w-full bg-orange-100 text-neutral-500 shadow md:hidden">
-                <div className="flex items-center md:hidden">
-                    {/* <button className="p-3 text-4xl">
-                        <IoListCircleOutline />
-                    </button> */}
-                    <div className="flex flex-1 items-center justify-around">
-                        <NavLink to="/" className="child p-3 text-4xl">
-                            <IoHomeOutline />
-                        </NavLink>
-                    </div>
-                </div>
-            </div>
-            <header className="container mx-auto flex justify-between p-8 text-orange-500 md:items-center xl:max-w-7xl">
-                <div className="flex flex-col md:flex-row md:items-center">
+            <header className="container mx-auto flex items-center justify-between p-8 text-orange-500 xl:max-w-7xl">
+                <div className="flex items-center">
                     <Link to="/" className="font-nunito text-3xl font-bold ">
                         Shopee Mini
                     </Link>
