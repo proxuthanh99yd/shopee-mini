@@ -6,7 +6,7 @@ import {
 
 export default function Footer() {
     return (
-        <div className="border-t-2 border-orange-500 ">
+        <div className="hidden border-t-2 border-orange-500 md:block">
             <div className="container mx-auto my-6 flex items-start justify-between border-b border-b-neutral-300 px-20 pb-4 xl:max-w-7xl">
                 <ul className="text-sm">
                     <li className="mb-2 text-base font-semibold">

@@ -20,7 +20,9 @@ export default function ListProduct({
         <>
             <div className="flex justify-between rounded-sm bg-neutral-200 p-3">
                 <div className="flex items-center gap-4 text-sm">
-                    <span className="text-neutral-500">Sort by</span>
+                    <span className="hidden text-neutral-500 md:block">
+                        Sort by
+                    </span>
                     <button
                         onClick={() => handleSort("updated_at.desc")}
                         className={`rounded-sm px-3 py-1  ${
@@ -53,7 +55,7 @@ export default function ListProduct({
                         </option>
                     </select>
                 </div>
-                <div className="flex items-center gap-5">
+                <div className="hidden items-center gap-5 md:flex">
                     <div>
                         <span className="text-orange-500">{currentPage}</span>/
                         <span>{pageCount}</span>
@@ -139,7 +141,10 @@ export default function ListProduct({
                     );
                 })}
             </div>
-            <nav className="mt-3 flex justify-center" aria-label="Pagination">
+            <nav
+                className="mb-10 mt-3 flex justify-center md:mb-0"
+                aria-label="Pagination"
+            >
                 <Paginate
                     currentPage={currentPage}
                     pageCount={pageCount}

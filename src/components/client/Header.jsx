@@ -1,14 +1,23 @@
+/* eslint-disable react/prop-types */
 import {
+    IoBagHandleOutline,
     IoCartOutline,
     IoChevronDownOutline,
+    IoCloseCircleOutline,
+    IoEnterOutline,
+    IoExitOutline,
     IoHelpCircleOutline,
+    IoHomeOutline,
     IoLanguageOutline,
+    IoListCircleOutline,
     IoLogoFacebook,
     IoLogoInstagram,
     IoNotifications,
+    IoPersonOutline,
+    IoReceiptOutline,
     IoSearchOutline,
 } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
 import { discountCalculator } from "../../utils/helper";
 
@@ -23,11 +32,77 @@ export default function Header({
     searchParam,
     setSearchParam,
     handleSearch,
+    setSidebar,
+    sidebar,
 }) {
     return (
-        <div className="bg-orange-600  text-neutral-50 ">
-            <header className="container mx-auto px-2 pb-2 xl:max-w-7xl">
-                <div className="flex justify-between py-1 text-sm font-normal">
+        <div className="sticky left-0 right-0 top-0 z-[9999] w-full bg-orange-600 text-neutral-50 md:static">
+            <div className="fixed bottom-0 left-0 z-[9999] w-full bg-orange-100 text-neutral-500 shadow md:hidden">
+                <div className="flex items-center md:hidden">
+                    <button onClick={setSidebar} className="p-3 text-4xl">
+                        {sidebar ? (
+                            <IoCloseCircleOutline className="text-orange-500" />
+                        ) : (
+                            <IoListCircleOutline />
+                        )}
+                    </button>
+                    <div className="flex flex-1 items-center justify-around">
+                        <NavLink to="/" className="child p-3 text-4xl">
+                            <IoHomeOutline />
+                        </NavLink>
+                        {isAuthenticated || isLogin ? (
+                            <>
+                                <NavLink
+                                    to="/cart"
+                                    className="child relative p-3 text-4xl"
+                                >
+                                    <IoBagHandleOutline />
+                                    {carts.length > 0 && (
+                                        <span className="absolute right-2 top-4 flex h-7 w-7 -translate-y-1/3 translate-x-1/4  items-center justify-center rounded-full bg-orange-500 text-base text-neutral-50">
+                                            {carts.length}
+                                        </span>
+                                    )}
+                                </NavLink>
+                                <NavLink
+                                    to="/account/purchase"
+                                    className="child p-3 text-4xl"
+                                >
+                                    <IoReceiptOutline />
+                                </NavLink>
+                                <NavLink
+                                    to="/account/profile"
+                                    className="child p-3 text-4xl"
+                                >
+                                    <IoPersonOutline />
+                                </NavLink>
+                                <button
+                                    onClick={handleLogout}
+                                    className="child p-3 text-4xl"
+                                >
+                                    <IoExitOutline />
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <NavLink
+                                    to="/login"
+                                    className="child p-3 text-4xl"
+                                >
+                                    <IoBagHandleOutline />
+                                </NavLink>
+                                <Link to="/login" className="p-3 text-4xl">
+                                    <IoPersonOutline />
+                                </Link>
+                                <Link to="/login" className="p-3 text-4xl">
+                                    <IoEnterOutline />
+                                </Link>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+            <header className="container mx-auto px-2 pb-2 lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl">
+                <div className="hidden justify-between py-1 text-sm font-normal md:flex">
                     <div className="flex items-center gap-2">
                         {isAdmin && (
                             <Link to="/admin/dashboard" href="#!">
@@ -120,8 +195,8 @@ export default function Header({
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center justify-between gap-10 py-3">
-                    <div>
+                <div className="flex items-center justify-between py-3 md:gap-10">
+                    <div className="hidden md:block">
                         <Link to="/" className="font-nunito text-3xl font-bold">
                             Shopee Mini
                         </Link>
@@ -142,7 +217,7 @@ export default function Header({
                         </button>
                     </div>
                     {isAuthenticated || isLogin ? (
-                        <div className="group relative mr-5 cursor-pointer text-3xl">
+                        <div className="group relative mr-5 hidden cursor-pointer text-3xl md:block">
                             <Link to="/cart">
                                 <IoCartOutline />
                             </Link>

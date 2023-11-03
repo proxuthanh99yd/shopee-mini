@@ -8,7 +8,7 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 
 export default function BannerSlider() {
     return (
-        <div className="container mx-auto mt-6 px-2 pb-2 xl:max-w-7xl">
+        <div className="container mx-auto mt-6 hidden px-2 pb-2 md:block lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl">
             <Swiper
                 pagination={{
                     clickable: true,
@@ -22,41 +22,18 @@ export default function BannerSlider() {
                 modules={[Autoplay, Navigation, Pagination]}
                 className=""
             >
-                <SwiperSlide>
-                    <img
-                        className="h-full w-full object-cover"
-                        src="/images/banner-1.jpg"
-                        alt=""
-                    />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <img
-                        className="h-full w-full object-cover"
-                        src="/images/banner-2.png"
-                        alt=""
-                    />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <img
-                        className="h-full w-full object-cover"
-                        src="/images/banner-3.jpg"
-                        alt=""
-                    />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <img
-                        className="h-full w-full object-cover"
-                        src="/images/banner-4.jpg"
-                        alt=""
-                    />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <img
-                        className="h-full w-full object-cover"
-                        src="/images/banner-5.png"
-                        alt=""
-                    />
-                </SwiperSlide>
+                {Array.from({ length: 5 }, (_, i) => {
+                    return (
+                        <SwiperSlide key={i}>
+                            <img
+                                // style={{ objectFit: "contain", height: "auto" }}
+                                className="h-auto w-full"
+                                src={`/images/banner-${i + 1}.jpg`}
+                                alt=""
+                            />
+                        </SwiperSlide>
+                    );
+                })}
             </Swiper>
         </div>
     );

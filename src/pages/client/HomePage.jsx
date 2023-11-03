@@ -12,6 +12,7 @@ import {
 } from "../../features/client/products/productsSlice";
 
 export default function HomePage() {
+    const { sidebar } = useSelector((state) => state.account);
     const { results: brandResults } = useSelector((state) => state.brands);
     const { results: categoryResults } = useSelector(
         (state) => state.categories,
@@ -57,8 +58,12 @@ export default function HomePage() {
     return (
         <>
             <BannerSlider />
-            <div className="container mx-auto mb-6 mt-10 flex gap-4 px-2 pb-2 xl:max-w-7xl">
-                <div className="basis-2/12">
+            <div className="container mx-auto mb-6 mt-5 px-2 pb-2 md:mt-10 md:flex md:gap-4 lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl">
+                <div
+                    className={`${
+                        sidebar ? "translate-x-0" : ""
+                    } fixed bottom-14 left-0 right-0 top-0 z-[9999] -translate-x-full bg-orange-100 transition-transform md:static md:block md:basis-2/12 md:bg-transparent`}
+                >
                     <Sidebar
                         handleClearFilter={handleClearFilter}
                         brandFilter={brandFilter}

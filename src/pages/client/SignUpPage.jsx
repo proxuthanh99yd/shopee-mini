@@ -1,10 +1,16 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Footer } from "../../components/client";
 import { useDispatch, useSelector } from "react-redux";
 import { setInput } from "../../features/client/account/accountSlice";
 import { signup } from "../../features/client/account/accountThunkApi";
 import { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
+import {
+    IoBagHandleOutline,
+    IoHomeOutline,
+    IoListCircleOutline,
+    IoPersonOutline,
+} from "react-icons/io5";
 export default function SignUpPage() {
     const {
         formInput,
@@ -76,12 +82,52 @@ export default function SignUpPage() {
     };
     return (
         <div>
-            <header className="container mx-auto flex items-center justify-between p-8 text-orange-500 xl:max-w-7xl">
-                <div className="flex items-center">
+            <div className="fixed bottom-0 left-0 z-[9999] w-full bg-orange-100 text-neutral-500 shadow md:hidden">
+                <div className="flex items-center md:hidden">
+                    <button className="p-3 text-4xl">
+                        <IoListCircleOutline />
+                    </button>
+                    <div className="flex flex-1 items-center justify-around">
+                        <NavLink to="/" className="child p-3 text-4xl">
+                            <IoHomeOutline />
+                        </NavLink>
+                        {isAuthenticated ? (
+                            <>
+                                <NavLink
+                                    to="/cart"
+                                    className="child p-3 text-4xl"
+                                >
+                                    <IoBagHandleOutline />
+                                </NavLink>
+                                <Link
+                                    to="/account/profile"
+                                    className="p-3 text-4xl"
+                                >
+                                    <IoPersonOutline />
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                <NavLink
+                                    to="/login"
+                                    className="child p-3 text-4xl"
+                                >
+                                    <IoBagHandleOutline />
+                                </NavLink>
+                                <Link to="/login" className="p-3 text-4xl">
+                                    <IoPersonOutline />
+                                </Link>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+            <header className="container mx-auto flex justify-between p-8 text-orange-500 md:items-center xl:max-w-7xl">
+                <div className="flex flex-col md:flex-row md:items-center">
                     <Link to="/" className="font-nunito text-3xl font-bold ">
                         Shopee Mini
                     </Link>
-                    <span className="ml-4 text-xl font-semibold text-neutral-950">
+                    <span className="hidden text-xl font-semibold text-neutral-950 md:ml-4 md:block">
                         Sign Up
                     </span>
                 </div>
@@ -89,12 +135,14 @@ export default function SignUpPage() {
             </header>
             <div className="relative bg-loginBg">
                 <img
-                    className="mx-auto block"
+                    className="mx-auto hidden md:block"
                     src="/images/loginBanner.jpg"
                     alt=""
                 />
-                <div className="absolute right-[10%] top-1/2 flex w-[400px] -translate-y-1/2 flex-col gap-4 rounded-sm bg-slate-100 p-8">
-                    <h3 className="text-lg">Sign Up</h3>
+                <div className="absolute flex w-full flex-col gap-4 rounded-sm bg-slate-100 p-8 md:right-[10%] md:top-1/2 md:w-[400px] md:-translate-y-1/2">
+                    <h3 className="text-center text-2xl font-semibold uppercase md:text-lg md:font-medium md:normal-case">
+                        Sign Up
+                    </h3>
                     <input
                         value={formInput?.phone}
                         onChange={handleInput}

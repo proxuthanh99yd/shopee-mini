@@ -9,9 +9,16 @@ import {
 import { fetchMyCarts } from "../../features/client/carts/cartsThunkApi";
 import { setSearchParam } from "../../features/client/products/productsSlice";
 import { fetchProducts } from "../../features/client/products/productsThunkApi";
+import { setSidebar } from "../../features/client/account/accountSlice";
 export default function Layout() {
-    const { authToken, user, isAuthenticating, isAuthenticated, isLogin } =
-        useSelector((state) => state.account);
+    const {
+        authToken,
+        user,
+        isAuthenticating,
+        isAuthenticated,
+        isLogin,
+        sidebar,
+    } = useSelector((state) => state.account);
     const { searchParam, sort, brandFilter, categoryFilter, currentPage } =
         useSelector((state) => state.products);
     const { myCart } = useSelector((state) => state.carts);
@@ -51,9 +58,14 @@ export default function Layout() {
             }),
         );
     };
+    const handleSetSidebar = () => {
+        dispatch(setSidebar());
+    };
     return (
         <>
             <Header
+                sidebar={sidebar}
+                setSidebar={handleSetSidebar}
                 handleSearch={handleSearch}
                 setSearchParam={handleSetSearchParam}
                 searchParam={searchParam}

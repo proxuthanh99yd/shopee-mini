@@ -141,8 +141,8 @@ export default function ProductPage() {
 
     return (
         <>
-            <div className="bg-neutral-200">
-                <div className="container mx-auto p-2 xl:max-w-7xl">
+            <div className="mb-12 bg-neutral-200 md:mb-0">
+                <div className="container mx-auto hidden p-2 md:block lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl">
                     <Breadcrumb
                         currentLink={{
                             name: `${result.name}`,
@@ -151,7 +151,7 @@ export default function ProductPage() {
                         prevLinks={[{ name: "Home", path: "/" }]}
                     />
                 </div>
-                <div className="container mx-auto mt-2 flex gap-10 rounded-sm bg-neutral-100 p-2 xl:max-w-7xl">
+                <div className="container mx-auto mt-2 flex flex-col gap-10 rounded-sm bg-neutral-100 p-2 md:flex-row lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl">
                     <div>
                         <ProductSlider images={result.thumbPreviews} />
                     </div>
@@ -277,7 +277,7 @@ export default function ProductPage() {
                                 </span>
                             </div>
                         </div>
-                        <div className="mt-4 flex items-center gap-5">
+                        <div className="mt-4 flex items-center justify-center gap-5 md:justify-start">
                             {isAuthenticated || isLogin ? (
                                 <>
                                     <button
@@ -322,7 +322,7 @@ export default function ProductPage() {
                         </div>
                     </div>
                 </div>
-                <div className="container mx-auto mt-2 rounded-sm bg-neutral-100 p-2 xl:max-w-7xl">
+                <div className="container mx-auto mt-2 rounded-sm bg-neutral-100 p-2 lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl">
                     <h2 className="bg-neutral-200 p-2 text-lg ">
                         Product Specifications
                     </h2>
@@ -347,7 +347,7 @@ export default function ProductPage() {
                         </div>
                     </div>
                 </div>
-                <div className="container mx-auto mt-2 rounded-sm bg-neutral-100 p-2 xl:max-w-7xl">
+                <div className="container mx-auto mt-2 rounded-sm bg-neutral-100 p-2 lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl">
                     <h2 className="bg-neutral-200 p-2 text-lg ">
                         Product Description
                     </h2>
@@ -358,7 +358,7 @@ export default function ProductPage() {
                         {parse(result.description)}
                     </div>
                 </div>
-                <div className="container mx-auto mt-2 rounded-sm bg-neutral-100 p-2 xl:max-w-7xl">
+                <div className="container mx-auto mt-2 rounded-sm bg-neutral-100 p-2 lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl">
                     {/* <h2 className="bg-neutral-200 p-2 text-lg ">
                         Product Ratings
                     </h2> */}
@@ -501,7 +501,7 @@ export default function ProductPage() {
                         </a>
                     </nav> */}
                 </div>
-                <div className="container mx-auto mt-2 rounded-sm  p-2 xl:max-w-7xl">
+                <div className="container mx-auto mt-2 rounded-sm  p-2 lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl">
                     <h2 className="p-2 text-lg uppercase text-neutral-600">
                         The same products
                     </h2>

@@ -68,7 +68,7 @@ export default function CheckoutPage() {
     return (
         <>
             <div className="bg-neutral-200 pb-12 pt-2">
-                <div className="container mx-auto p-2 xl:max-w-7xl">
+                <div className="container mx-auto hidden p-2 md:block xl:max-w-7xl">
                     <Breadcrumb
                         currentLink={{
                             name: "Checkout",
@@ -88,17 +88,15 @@ export default function CheckoutPage() {
                         <div className="flex items-center text-xl text-orange-500">
                             <IoLocationSharp /> Delivery Address
                         </div>
-                        <div className="mt-2 flex justify-between">
-                            <div className="">
-                                <span className="mr-5 font-semibold">
-                                    {user.name} {user.phone}
-                                </span>
-                                {user.address}
-                            </div>
-                            {/* <div className="text-blue-600">Change</div> */}
+                        <div className="mt-2 flex flex-col gap-2">
+                            <span className="font-semibold">
+                                Name: {user.name}
+                            </span>
+                            <span>Address: {user.phone}</span>
+                            <span>Phone Number: {user.address}</span>
                         </div>
                     </div>
-                    <div className="mt-2 flex bg-neutral-50 px-10 py-4">
+                    <div className="mt-2 hidden bg-neutral-50 px-10 py-4 md:flex">
                         <div className="flex basis-6/12 gap-3 text-xl text-neutral-500">
                             Products Ordered
                         </div>
@@ -116,7 +114,7 @@ export default function CheckoutPage() {
                         return (
                             <div
                                 key={item.id}
-                                className="mt-1 flex items-center bg-white px-10 py-4"
+                                className="mt-1 flex flex-col bg-white px-10 py-4 md:flex-row md:items-center"
                             >
                                 <div className="flex basis-6/12 gap-3">
                                     <div className="flex items-center gap-4">
@@ -129,25 +127,36 @@ export default function CheckoutPage() {
                                             }
                                             alt=""
                                         />
-                                        <p className="line-clamp-2 w-80">
-                                            {item.product.name}
+                                        <div>
+                                            <p className="line-clamp-2 w-auto">
+                                                {item.product.name}{" "}
+                                            </p>
                                             <span className="text-neutral-500">
                                                 ( {item.classify.name})
                                             </span>
-                                        </p>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="basis-2/12 text-center text-neutral-500">
+                                <div className="mt-2 flex basis-2/12 justify-between text-neutral-500 md:mt-0 md:block md:text-center">
+                                    <span className="m-2 md:hidden">
+                                        Unit Price:
+                                    </span>
                                     $
                                     {discountCalculator(
                                         item.classify.price,
                                         item.product.discount,
                                     ).toFixed(2)}
                                 </div>
-                                <div className="basis-2/12 text-center text-neutral-500">
+                                <div className="flex basis-2/12 justify-between text-neutral-500 md:block md:text-center">
+                                    <span className="m-2 md:hidden">
+                                        Amount:
+                                    </span>
                                     {item.quantity}
                                 </div>
-                                <div className="basis-2/12 text-center text-orange-500">
+                                <div className="flex basis-2/12 justify-between md:block md:text-center md:text-orange-500">
+                                    <span className="m-2 md:hidden">
+                                        Subtotal:
+                                    </span>
                                     $
                                     {(
                                         discountCalculator(
@@ -159,23 +168,21 @@ export default function CheckoutPage() {
                             </div>
                         );
                     })}
-                    <div className="flex items-center justify-end bg-slate-100 px-10 py-4">
-                        <span className="basis-2/12 text-end text-base text-neutral-500">
+                    <div className="flex justify-between bg-slate-100 px-10 py-4 md:items-center">
+                        <span className="text-base text-neutral-500 ">
                             Shipping:
                         </span>
-                        <p className=" basis-2/12 text-center text-lg text-orange-600">
-                            $0
-                        </p>
+                        <p className="text-lg text-orange-600 ">$0</p>
                     </div>
-                    <div className="flex items-center justify-end bg-slate-100 px-10 py-4 text-end">
-                        <span className="basis-2/12 text-base text-neutral-500">
+                    <div className="flex justify-between bg-slate-100 px-10 py-4 md:items-center">
+                        <span className="text-base text-neutral-500">
                             Order Total ({checkoutItems.length} item):
                         </span>
-                        <p className=" basis-2/12 text-center text-xl text-orange-600">
+                        <p className="text-xl text-orange-600">
                             ${checkoutTotalCalculator(checkoutItems)}
                         </p>
                     </div>
-                    <div className="mt-3 flex gap-3 bg-neutral-50 p-5 text-neutral-500">
+                    <div className="mt-3 hidden gap-3 bg-neutral-50 p-5 text-neutral-500 md:flex">
                         <h2 className="mr-10 text-lg text-neutral-700">
                             Payment Method
                         </h2>
@@ -197,7 +204,7 @@ export default function CheckoutPage() {
                     </div>
 
                     <div className="mt-0.5 flex gap-3 bg-neutral-50 p-5 text-neutral-500">
-                        <h3 className="mr-16 text-neutral-700">
+                        <h3 className="text-neutral-700 md:mr-16">
                             Cash on Delivery
                         </h3>
                         <p>
@@ -206,27 +213,27 @@ export default function CheckoutPage() {
                         </p>
                     </div>
                     <div className="mt-0.5  bg-neutral-50 p-5 ">
-                        <div className="flex items-center justify-end  px-10 py-4 text-end">
-                            <span className="basis-2/12 text-left text-base ">
+                        <div className="flex items-center py-4  text-end md:justify-end md:px-10">
+                            <span className="text-left text-base md:basis-2/12 ">
                                 Merchandise Subtotal:
                             </span>
-                            <span className=" basis-1/12 text-left text-sm text-neutral-500">
+                            <span className="ml-auto text-left text-sm text-neutral-500 md:basis-1/12">
                                 ${checkoutTotalCalculator(checkoutItems)}
                             </span>
                         </div>
-                        <div className="flex items-center justify-end  px-10 py-4 text-end">
-                            <span className="basis-2/12 text-left text-base ">
+                        <div className="flex items-center py-4  text-end md:justify-end md:px-10">
+                            <span className="text-left text-base md:basis-2/12 ">
                                 Shipping Total:
                             </span>
-                            <span className=" basis-1/12 text-left text-sm text-neutral-500">
+                            <span className="ml-auto text-left text-sm text-neutral-500 md:basis-1/12">
                                 $0
                             </span>
                         </div>
-                        <div className="flex items-center justify-end  px-10 py-4 text-end">
-                            <span className="basis-2/12 text-left text-base ">
+                        <div className="flex items-center py-4  text-end md:justify-end md:px-10">
+                            <span className="text-left text-base md:basis-2/12 ">
                                 Total Payment:
                             </span>
-                            <span className=" basis-1/12 text-left text-2xl text-orange-600">
+                            <span className="ml-auto text-left text-2xl text-orange-600 md:basis-1/12">
                                 ${checkoutTotalCalculator(checkoutItems)}
                             </span>
                         </div>
@@ -234,7 +241,7 @@ export default function CheckoutPage() {
                             <button
                                 onClick={handleOrder}
                                 disabled={checkoutItems.length <= 0}
-                                className="rounded-sm bg-orange-600 px-10 py-2 text-neutral-50 disabled:bg-orange-300"
+                                className="w-full rounded-sm bg-orange-600 px-10 py-2 text-neutral-50 disabled:bg-orange-300 md:w-auto"
                             >
                                 Place Order
                             </button>
