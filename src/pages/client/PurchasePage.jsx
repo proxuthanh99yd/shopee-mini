@@ -93,18 +93,8 @@ export default function PurchasePage() {
                         <div key={item.id} className="mt-4">
                             <div className="flex items-center justify-between gap-2 border-b bg-neutral-50 px-6 py-2 text-teal-500">
                                 <span>{DateFormat.full(item.order_date)}</span>
-                                <span className="text-sm">
+                                <span className="text-right text-sm">
                                     {orderStatus(item.status)}
-                                    {item.status == 0 && (
-                                        <button
-                                            onClick={() =>
-                                                handleCancelOrder(item.id)
-                                            }
-                                            className="mx-2 rounded-sm bg-orange-500 px-2 py-1 text-neutral-50 hover:bg-orange-400"
-                                        >
-                                            Cancel
-                                        </button>
-                                    )}
                                 </span>
                             </div>
                             <div className="flex flex-col gap-4 bg-neutral-50 px-4 py-2">
@@ -153,11 +143,23 @@ export default function PurchasePage() {
                                         </div>
                                     );
                                 })}
-                                <div className="flex items-center justify-between">
-                                    <div className="rounded-sm bg-teal-500 p-1 text-neutral-50">
-                                        Order Code: {item.id}
+                                <div className="flex flex-col justify-between md:flex-row md:items-center">
+                                    <div className="flex">
+                                        {item.status == 0 && (
+                                            <button
+                                                onClick={() =>
+                                                    handleCancelOrder(item.id)
+                                                }
+                                                className="mx-2 rounded-sm bg-orange-500 px-2 py-1 text-neutral-50 hover:bg-orange-400"
+                                            >
+                                                Cancel
+                                            </button>
+                                        )}
+                                        <div className="flex items-center rounded-sm p-1 text-teal-500">
+                                            Order Code: {item.id}
+                                        </div>
                                     </div>
-                                    <div className="text-sm">
+                                    <div className="self-end text-sm md:self-auto">
                                         Order Total:
                                         <span className="ml-2 text-2xl text-orange-600">
                                             $
