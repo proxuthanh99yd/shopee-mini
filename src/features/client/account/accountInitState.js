@@ -25,4 +25,5 @@ export const accountInitState = {
     isAuthenticating: false,
     isAuthenticated: false,
     isSigned: false,
+    sidebar: false,
 }

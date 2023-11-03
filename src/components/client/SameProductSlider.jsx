@@ -16,8 +16,15 @@ import {
 } from "../../utils/helper";
 import { Link } from "react-router-dom";
 import { IoStar } from "react-icons/io5";
+import { useEffect, useState } from "react";
 
 export default function SameProductSlider({ sameProducts }) {
+    const [slide, setSlide] = useState(5);
+    useEffect(() => {
+        if (screen.width < 768) {
+            setSlide(2);
+        }
+    }, []);
     return (
         <>
             <Swiper
@@ -26,7 +33,7 @@ export default function SameProductSlider({ sameProducts }) {
                     "--swiper-navigation-color": "#fff",
                     "--swiper-pagination-color": "#fff",
                 }}
-                slidesPerView={5}
+                slidesPerView={slide}
                 spaceBetween={10}
                 navigation={true}
                 modules={[Navigation]}

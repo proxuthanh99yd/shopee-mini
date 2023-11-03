@@ -18,7 +18,7 @@ export default function ProductSlider({ images }) {
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
     return (
-        <div className="h-[450px] w-[450px]">
+        <div className="h-auto w-full md:h-[350px] md:w-[350px] lg:h-[450px] lg:w-[450px]">
             <Swiper
                 style={{
                     "--swiper-navigation-color": "#fff",

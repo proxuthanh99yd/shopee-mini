@@ -82,7 +82,7 @@ export default function CartPage() {
     return (
         <>
             <div className="bg-neutral-200 py-2">
-                <div className="container mx-auto p-2 xl:max-w-7xl">
+                <div className="container mx-auto hidden p-2 md:block xl:max-w-7xl">
                     <Breadcrumb
                         currentLink={{
                             name: "Cart",
@@ -97,7 +97,7 @@ export default function CartPage() {
                     />
                 </div>
                 <div className="container mx-auto p-2 xl:max-w-7xl">
-                    <div className="flex bg-neutral-100 px-10 py-4">
+                    <div className="hidden bg-neutral-100 px-10 py-4 md:flex">
                         <div className="flex basis-6/12 gap-3">
                             <input
                                 defaultChecked={false}
@@ -140,7 +140,7 @@ export default function CartPage() {
                         return (
                             <div
                                 key={cart.id}
-                                className="mt-1 flex items-center bg-white px-10 py-4"
+                                className="mt-1 flex flex-col items-start gap-2 bg-white px-10 py-4 md:flex-row md:items-center md:gap-0"
                             >
                                 <div className="flex basis-6/12 gap-3">
                                     <input
@@ -155,6 +155,7 @@ export default function CartPage() {
                                         }
                                         name=""
                                         id=""
+                                        className="w-5 md:w-auto"
                                     />
                                     <div className="flex items-center gap-4">
                                         <img
@@ -168,7 +169,7 @@ export default function CartPage() {
                                         />
                                         <Link
                                             to={`/product/${cart.product.id}`}
-                                            className="flex w-80 flex-col"
+                                            className="flex w-auto flex-col"
                                         >
                                             <span className="line-clamp-2 flex-1">
                                                 {cart.product.name}
@@ -228,7 +229,7 @@ export default function CartPage() {
                                         )
                                     ).toFixed(2)}
                                 </div>
-                                <div className="flex basis-2/12 flex-col text-center text-neutral-500">
+                                <div className="mt-1 flex w-full justify-around text-center text-neutral-500 md:mt-0 md:basis-2/12 md:flex-col">
                                     <button
                                         onClick={() =>
                                             handleUpdateCart({
@@ -236,7 +237,7 @@ export default function CartPage() {
                                                 quantity: cart.quantity,
                                             })
                                         }
-                                        className="p-0.5 text-blue-300 hover:text-blue-500"
+                                        className="rounded-sm px-2 py-1 text-blue-300 shadow-sm hover:text-blue-500 md:p-0.5"
                                     >
                                         Update
                                     </button>
@@ -244,7 +245,7 @@ export default function CartPage() {
                                         onClick={() =>
                                             handleDeleteCart(cart.id)
                                         }
-                                        className="p-0.5 text-orange-300 hover:text-orange-500"
+                                        className="rounded-sm text-orange-300 shadow-sm hover:text-orange-500 md:p-0.5"
                                     >
                                         Delete
                                     </button>
@@ -252,7 +253,7 @@ export default function CartPage() {
                             </div>
                         );
                     })}
-                    <div className="sticky bottom-0 flex items-center bg-neutral-100 px-10 py-4">
+                    <div className="bottom-0 mb-10 flex flex-col bg-neutral-100 px-10 py-4 md:sticky md:mb-0 md:flex-row md:items-center">
                         <div className="ml-auto font-semibold">
                             Total (
                             {
@@ -287,7 +288,7 @@ export default function CartPage() {
                                     ).length === 0
                                 }
                                 onClick={handleCheckout}
-                                className="rounded-sm bg-orange-500 px-10 py-2 text-neutral-50 disabled:bg-orange-300"
+                                className="mt-2 w-full rounded-sm bg-orange-500 py-2 text-neutral-50 disabled:bg-orange-300 md:mt-0 md:w-auto md:px-10"
                             >
                                 Check Out
                             </button>

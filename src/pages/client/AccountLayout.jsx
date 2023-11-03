@@ -11,7 +11,7 @@ export default function AccountLayout() {
     return (
         <>
             <div className="container mx-auto my-6 flex gap-8 px-2 pb-2 xl:max-w-7xl">
-                <div>
+                <div className="hidden md:block">
                     <div className="flex items-center gap-2 border-b px-2 pb-4">
                         <img
                             className="h-12 w-12 rounded-full object-cover"
@@ -57,7 +57,7 @@ export default function AccountLayout() {
                         </li>
                     </ul>
                 </div>
-                <div className="flex-1 rounded-sm bg-neutral-50">
+                <div className="mb-10 flex-1 rounded-sm bg-neutral-50 md:mb-0">
                     <Outlet />
                 </div>
             </div>

@@ -14,8 +14,8 @@ export default function Sidebar({
     handleClearFilter,
 }) {
     return (
-        <>
-            <div>
+        <div className="h-full overflow-auto">
+            <div className="overflow-auto">
                 <h3 className="flex items-center gap-1 border-b border-neutral-500/80 py-2 font-semibold">
                     <IoListSharp className="text-lg font-bold" /> All Categories
                 </h3>
@@ -42,7 +42,7 @@ export default function Sidebar({
                     })}
                 </ul>
             </div>
-            <div>
+            <div className="overflow-auto">
                 <h3 className="flex items-center gap-1 border-b border-neutral-500/80 py-2 font-semibold">
                     <IoFilterSharp className="text-lg font-bold" /> Search
                     Filter
@@ -132,12 +132,12 @@ export default function Sidebar({
 
                 <button
                     onClick={handleClearFilter}
-                    className="mt-2 block w-full rounded-sm bg-orange-500 py-1 text-sm text-neutral-50 hover:opacity-80"
+                    className="mb-4 mt-2 block w-full rounded-sm bg-orange-500 py-2 text-sm text-neutral-50 hover:opacity-80 md:my-1 md:mb-0"
                 >
                     Clear all
                 </button>
             </div>
-        </>
+        </div>
     );
 }
 

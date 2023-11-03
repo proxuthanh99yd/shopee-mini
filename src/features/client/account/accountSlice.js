@@ -11,6 +11,9 @@ const accountSlice = createSlice({
         },
         setChangePassword: (state, { payload }) => {
             state.changePassword[payload.name] = payload.value
+        },
+        setSidebar: (state) => {
+            state.sidebar = !state.sidebar;
         }
     },
     extraReducers(builder) {
@@ -101,5 +104,5 @@ const accountSlice = createSlice({
     }
 })
 
-export const { setInput, setChangePassword } = accountSlice.actions;
+export const { setInput, setChangePassword, setSidebar } = accountSlice.actions;
 export default accountSlice.reducer

@@ -3,6 +3,8 @@ import { updateUserProfile } from "../../features/client/account/accountThunkApi
 import { useEffect } from "react";
 import { useRef } from "react";
 import { toast } from "react-toastify";
+import { IoSettingsOutline } from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 export default function ProfilePage() {
     const { user, status, authToken, isAuthenticating } = useSelector(
@@ -82,15 +84,27 @@ export default function ProfilePage() {
         );
     }
     return (
-        <div className="w-full px-6 shadow-sm">
+        <div className="w-full px-2 shadow-sm md:px-6">
             <div className="border-b py-4">
-                <h2 className="text-lg">My Profile</h2>
-                <p className="text-sm text-neutral-600">
-                    Manage and protect your account
-                </p>
+                <div className="flex justify-between">
+                    <div>
+                        <h2 className="text-lg">My Profile</h2>
+                        <p className="text-sm text-neutral-600">
+                            Manage and protect your account
+                        </p>
+                    </div>
+                    <div className="md:hidden">
+                        <Link
+                            to="/account/change_password"
+                            className="flex items-center gap-1 rounded-sm border border-orange-400 p-1 text-sm text-orange-400 hover:bg-orange-400 hover:text-neutral-50"
+                        >
+                            Change password <IoSettingsOutline />
+                        </Link>
+                    </div>
+                </div>
             </div>
             <form onSubmit={handleSubmit} className="mt-6 flex pb-3">
-                <div className="basis-9/12">
+                <div className="md:basis-9/12">
                     <table className="w-full border-collapse border border-neutral-400">
                         <tbody>
                             <tr>
@@ -185,7 +199,7 @@ export default function ProfilePage() {
                         </tbody>
                     </table>
                 </div>
-                <div className="ml-14 flex basis-3/12 flex-col items-center gap-4 border-l">
+                <div className="ml-14 hidden basis-3/12 flex-col items-center gap-4 border-l md:flex">
                     <img
                         src="/images/book.jpg"
                         className="h-28 w-28 rounded-full object-cover shadow"

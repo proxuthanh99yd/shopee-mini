@@ -46,7 +46,7 @@ export const fetchSingleProduct = createAsyncThunk("SingleProduct/get",
 
             const sameProducts = await products({
                 method: 'get',
-                url: `/products?sort=updated_at.desc&category=${data.categories.name}`,
+                url: `/products?sort=updated_at.desc&category=${data.categories.name}&brand=${data.brands.name}`,
             });
 
             data.sameProducts = sameProducts.data;
