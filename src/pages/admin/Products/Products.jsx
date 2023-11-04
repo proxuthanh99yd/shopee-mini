@@ -10,6 +10,7 @@ import {
 } from "../../../features/admin/products/productsSlice";
 import {
     changeStatusProducts,
+    deleteProducts,
     fetchProducts,
 } from "../../../features/admin/products/productsThunkApi";
 import { Link } from "react-router-dom";
@@ -79,6 +80,9 @@ export default function Products() {
     };
     const handleChangeStatus = (id) => {
         dispatch(changeStatusProducts(id));
+    };
+    const handleDelete = (id) => {
+        dispatch(deleteProducts(id));
     };
     // if (isLoading) {
     //     return <Loading />;
@@ -273,7 +277,10 @@ export default function Products() {
                                                 Edit
                                                 <IoCreateOutline className="text-sm" />
                                             </Link>
-                                            <button className="inline-flex items-center gap-1 rounded bg-red-400 px-3 py-1 text-xs text-neutral-50 transition-colors hover:bg-red-500 ">
+                                            <button
+                                                onClick={() => handleDelete(id)}
+                                                className="inline-flex items-center gap-1 rounded bg-red-400 px-3 py-1 text-xs text-neutral-50 transition-colors hover:bg-red-500 "
+                                            >
                                                 Delete{" "}
                                                 <IoTrashBinOutline className="text-sm" />
                                             </button>

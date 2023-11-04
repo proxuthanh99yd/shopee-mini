@@ -62,7 +62,7 @@ export default function HomePage() {
                 <div
                     className={`${
                         sidebar ? "translate-x-0" : ""
-                    } fixed bottom-14 left-0 right-0 top-0 z-[9999] -translate-x-full bg-orange-100 transition-transform md:static md:block md:basis-2/12 md:bg-transparent`}
+                    } fixed bottom-14 left-0 right-0 top-0 z-[9999] -translate-x-full bg-orange-100 transition-transform md:static md:block md:basis-2/12 md:translate-x-0 md:bg-transparent`}
                 >
                     <Sidebar
                         handleClearFilter={handleClearFilter}

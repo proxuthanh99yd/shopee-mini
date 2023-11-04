@@ -60,6 +60,47 @@ export default function CreateProduct() {
     }, [status]);
     const handleCreate = () => {
         const formData = new FormData();
+        if (!product.name) {
+            toast.error("required name", { autoClose: 2000 });
+            return;
+        }
+        if (!product.category_id) {
+            toast.error("required category", { autoClose: 2000 });
+            return;
+        }
+        if (!product.brand_id) {
+            toast.error("required brand", { autoClose: 2000 });
+            return;
+        }
+        if (JSON.stringify(imageRef.current) === "[]") {
+            toast.error("required image", { autoClose: 2000 });
+            return;
+        }
+
+        if (!product.classification.name) {
+            toast.error("required variation name", { autoClose: 2000 });
+            return;
+        }
+        if (!product.classify[0].name) {
+            toast.error("required classify name", { autoClose: 2000 });
+            return;
+        }
+        if (!product.classify[0].price) {
+            toast.error("required classify price", { autoClose: 2000 });
+            return;
+        }
+        if (!product.classify[0].stock) {
+            toast.error("required classify stock", { autoClose: 2000 });
+            return;
+        }
+        if (JSON.stringify(thumbRef.current) === "[]") {
+            toast.error("required thumbnail", { autoClose: 2000 });
+            return;
+        }
+        if (!product.description) {
+            toast.error("required description", { autoClose: 2000 });
+            return;
+        }
         formData.append("name", product.name);
         formData.append("discount", product.discount);
         formData.append("description", product.description);
@@ -72,9 +113,16 @@ export default function CreateProduct() {
         });
         formData.append("variation_name", product.classification.name);
         product.classify.forEach((e, i) => {
-            formData.append(`variation[${i + 1}]`, e.name);
-            formData.append(`price[${i + 1}]`, e.price);
-            formData.append(`stock[${i + 1}]`, e.stock);
+            console.log(e.name);
+            if (e.name) {
+                formData.append(`variation[${i + 1}]`, e.name);
+            }
+            if (e.price) {
+                formData.append(`price[${i + 1}]`, e.price);
+            }
+            if (e.stock) {
+                formData.append(`stock[${i + 1}]`, e.stock);
+            }
         });
         dispatch(createProducts({ body: formData }));
     };
@@ -146,7 +194,7 @@ export default function CreateProduct() {
                                 id="productName"
                                 name="name"
                                 className="block basis-10/12 rounded border border-neutral-300 px-3 py-1.5 hover:border-neutral-400 focus:border-neutral-400 focus:outline-none"
-                                placeholder="Input"
+                                placeholder="Product name"
                             />
                         </div>
                         <div className="mb-4 flex items-center justify-between gap-3">

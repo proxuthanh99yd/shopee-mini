@@ -188,21 +188,35 @@ const productsSlice = createSlice({
             })
             .addCase(createProducts.fulfilled, (state, { payload }) => {
                 state.status = "created";
-                state.results.push(payload.results)
+                state.results.push(payload)
             })
             .addCase(createProducts.rejected, (state) => {
                 state.status = "failed";
             })
             .addCase(deleteProducts.pending, (state) => {
-                state.deleted = false;
+                state.toastLoading = true;
+                state.toastSuccess = false;
+                state.toastError = false;
+                state.loadingMessage = "deleting";
+                state.successMessage = "";
+                state.errorMessage = "";
             })
             .addCase(deleteProducts.fulfilled, (state, { payload }) => {
-                state.isLoading = false;
+                state.toastLoading = false;
+                state.toastSuccess = true;
+                state.toastError = false;
+                state.loadingMessage = "";
+                state.successMessage = "delete success!";
+                state.errorMessage = "";
                 state.results = state.results.filter(result => result.id !== payload)
-                state.deleted = true;
             })
-            .addCase(deleteProducts.rejected, (state) => {
-                state.deleted = false;
+            .addCase(deleteProducts.rejected, (state, { payload }) => {
+                state.toastLoading = false;
+                state.toastSuccess = false;
+                state.toastError = true;
+                state.loadingMessage = "";
+                state.successMessage = "";
+                state.errorMessage = `${payload.status} - ${payload.data.message}`
             })
             .addCase(updateProducts.pending, (state) => {
                 state.toastLoading = true;

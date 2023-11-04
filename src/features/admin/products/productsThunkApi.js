@@ -82,7 +82,7 @@ export const createProducts = createAsyncThunk("ManagerProducts/create",
         }
     })
 export const deleteProducts = createAsyncThunk("ManagerProducts/delete",
-    async ({ id }, thunkApi) => {
+    async (id, thunkApi) => {
         try {
             const { data } = await products({
                 method: 'delete',
