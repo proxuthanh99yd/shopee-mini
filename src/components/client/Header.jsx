@@ -195,12 +195,17 @@ export default function Header({
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center justify-between py-3 md:gap-10">
+                <div className="flex items-center justify-between gap-4 md:gap-10 md:py-3">
                     <div className="hidden md:block">
                         <Link to="/" className="font-nunito text-3xl font-bold">
                             Shopee Mini
                         </Link>
                     </div>
+                    <img
+                        className="h-auto w-14 md:hidden"
+                        src="/images/icons8-shopee-100.png"
+                        alt=""
+                    />
                     <div className="relative flex-1">
                         <input
                             onChange={setSearchParam}
